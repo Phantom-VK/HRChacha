@@ -1,5 +1,4 @@
 import streamlit as st
-
 from hrchacha.constants import USER_CHAT_INPUT_KEY
 from hrchacha.ui.main_window import MainWindowUI
 
@@ -18,8 +17,9 @@ def custom_response_handler(prompt: str) -> str:
 
 if __name__ == "__main__":
     main_app = MainWindowUI(
-        title="HRChacha",
-        response_callback=custom_response_handler
-    )
+            title=" HRChacha – Your Tech Job Buddy",
+            response_callback=custom_response_handler
+        )
+
     if prompt := st.chat_input("What's up?", key=USER_CHAT_INPUT_KEY):
-        main_app.process_user_input(prompt)
+            main_app.process_user_input(prompt)

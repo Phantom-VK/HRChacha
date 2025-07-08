@@ -1,6 +1,8 @@
 import streamlit as st
 from typing import Optional, Callable
 
+from hrchacha.components.chatbot import HRChacha
+
 
 class MainWindowUI:
     def __init__(self, title: str, response_callback: Optional[Callable] = None):
@@ -12,12 +14,12 @@ class MainWindowUI:
         """
         self.title = title
         self.response_callback = self.default_response
-
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
         self.USER_ROLE = "user"
         self.BOT_ROLE = "assistant"
+        self.bot = HRChacha()
 
         self._initialize_ui()
 
@@ -62,8 +64,8 @@ class MainWindowUI:
                 "content": f"Bot: {response}"
             })
 
-    @staticmethod
-    def default_response(prompt: str) -> str:
+
+    def default_response(self, prompt: str) -> str:
         """Default response handler if none provided.
 
         Args:
@@ -72,4 +74,5 @@ class MainWindowUI:
         Returns:
             A simple echo response
         """
-        return prompt
+
+        return self.bot.get_response(prompt)
