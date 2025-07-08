@@ -1,0 +1,1 @@
+USER_CHAT_INPUT_KEY = "ucik"
