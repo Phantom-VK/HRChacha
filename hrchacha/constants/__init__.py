@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from typing import List
+from pathlib import Path
+
 
 USER_CHAT_INPUT_KEY = "ucik"
-
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 class ConversationState:
     GREETING = "greeting"

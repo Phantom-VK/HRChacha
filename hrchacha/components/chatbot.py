@@ -2,6 +2,7 @@ from typing import List
 
 import streamlit as st
 
+from hrchacha.logging.logger import logging
 from hrchacha.constants import ConversationState, User, Job, GreetingMessage
 
 
@@ -16,10 +17,8 @@ class HRChacha:
             st.session_state.user_interactions = 0
 
 
-
-
-
     def get_response(self, prompt:str) -> str | None:
+        logging.info("Getting bot response")
         if self.state == ConversationState.GREETING:
             if st.session_state.user_interactions == 0:
                 st.session_state.new_user = False
