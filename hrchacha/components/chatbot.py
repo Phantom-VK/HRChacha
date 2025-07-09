@@ -12,18 +12,24 @@ class HRChacha:
         self.user = User()
         self.message_history = st.session_state.messages
 
-        if "new_user" not in st.session_state:
-            st.session_state.new_user = True
-        if "new_interaction" not in st.session_state:
-            st.session_state.new_interaction = True
+        if "user_interactions" not in st.session_state:
+            st.session_state.user_interactions = 0
+
+
+
 
 
     def get_response(self, prompt:str) -> str | None:
-        if self.state == ConversationState.GREETING and st.session_state.new_user :
-            st.session_state.new_user = False
-            st.session_state.new_interaction = False
-            return GreetingMessage.get_main_greeting()
-        return GreetingMessage.get_welcome_back_message()
+        if self.state == ConversationState.GREETING:
+            if st.session_state.user_interactions == 0:
+                st.session_state.new_user = False
+                st.session_state.user_interactions += 1
+                return GreetingMessage.get_main_greeting()
+            else:
+                st.session_state.user_interactions += 1
+                return GreetingMessage.get_welcome_back_message()
+        st.session_state.user_interactions += 1
+        return self.process_user_prompt(prompt)
 
 
     def validate_user_info(self) -> (bool, str):
@@ -33,5 +39,9 @@ class HRChacha:
         pass
 
     def suggest_jobs(self) -> List[Job]:
+        pass
+
+    def process_user_prompt(self, prompt):
+
         pass
 

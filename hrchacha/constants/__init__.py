@@ -44,41 +44,29 @@ class GreetingMessage:
         """
         Returns the main greeting message displayed when chatbot starts
         """
-        greeting = """
-🤖 **Welcome to TalentScout AI Hiring Assistant!**
-
-Hello! I'm your AI-powered hiring assistant, here to help streamline your initial interview process. I specialize in technology placements and I'm excited to learn about your background and skills.
-
-**What I'll Help You With:**
-✅ Collect your professional information
-✅ Understand your technical expertise
-✅ Ask relevant technical questions based on your skills
-✅ Ensure a smooth initial screening process
-
-**Here's How Our Conversation Will Flow:**
-1. **Personal Information** - I'll gather your basic details (name, contact, experience)
-2. **Technical Background** - You'll share your tech stack and expertise areas
-3. **Technical Assessment** - I'll ask 3-5 relevant technical questions
-4. **Next Steps** - I'll explain what happens after our conversation
-
-**What You Need to Know:**
-• This conversation typically takes 10-15 minutes
-• Please provide accurate information for the best experience
-• All your data is handled securely and professionally
-• You can type 'exit', 'quit', or 'bye' anytime to end our chat
-
-**Privacy & Security:**
-🔒 Your information is encrypted and stored securely
-🔒 We follow strict data privacy standards
-🔒 Your details will only be used for recruitment purposes
-
----
-
-Let's get started! Could you please tell me your **full name**?
-
-*Type your response below and I'll guide you through the rest of the process.*
-        """
-        return greeting.strip()
+        greeting = ("🤖 **Welcome to TalentScout AI Hiring Assistant!**\n\n"
+    "Hello! I'm your AI-powered hiring assistant. I help with your initial screening for tech roles.\n\n"
+    "**Here's what I’ll do:**\n"
+    "\t✅ Collect your basic info\n"
+    "\t✅ Understand your tech skills\n"
+    "\t✅ Ask 3–5 relevant technical questions\n"
+    "\t✅ Make your first screening quick and smooth\n\n"
+    "**Conversation Flow:**\n"
+    "\t1. Personal Info – Name, contact, experience\n"
+    "\t2. Tech Background – Your stack & tools\n"
+    "\t3. Tech Assessment – I’ll ask you questions\n"
+    "\t4. Next Steps – What happens after this chat\n\n"
+    "**Before We Start:**\n"
+    "\t• This will take ~10–15 minutes\n"
+    "\t• Please give accurate info for best results\n"
+    "\t• Type 'exit', 'quit', or 'bye' anytime to stop\n\n"
+    "**Privacy:**\n"
+    "\t🔒 Your data is secure and encrypted\n"
+    "\t🔒 We follow strict privacy standards\n"
+    "\t🔒 Used only for recruitment purposes\n\n"
+    "---\n"
+    "Let’s get started! Please tell me your **full name** below.\n")
+        return greeting
 
     @staticmethod
     def get_welcome_back_message(candidate_name=None):
@@ -86,22 +74,21 @@ Let's get started! Could you please tell me your **full name**?
         Returns a personalized welcome back message for returning users
         """
         if candidate_name:
-            return f"""
-🤖 **Welcome back, {candidate_name}!**
-
-I see we've chatted before. Would you like to:
-1. Continue from where we left off
-2. Start a fresh conversation
-3. Update your information
-
-Please let me know how you'd like to proceed!
-            """
+            return (
+                f"🤖 **Welcome back, {candidate_name}!**\n\n"
+                "I see we’ve chatted before.\n"
+                "Would you like to:\n"
+                "\t1. Continue from where we left off\n"
+                "\t2. Start a fresh conversation\n"
+                "\t3. Update your info\n\n"
+                "Let me know how you'd like to proceed!"
+            )
         else:
-            return """
-🤖 **Welcome back to TalentScout!**
-
-I see you've returned to complete your profile. Let's pick up where we left off.
-            """
+            return (
+                "🤖 **Welcome back to TalentScout!**\n\n"
+                "Looks like you’re returning to complete your profile.\n"
+                "Let’s pick up where we left off!"
+            )
 
     @staticmethod
     def get_after_hours_greeting():

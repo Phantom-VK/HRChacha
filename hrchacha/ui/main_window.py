@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 from typing import Optional, Callable
 
@@ -5,74 +6,91 @@ from hrchacha.components.chatbot import HRChacha
 
 
 class MainWindowUI:
+    USER_ROLE = "user"
+    BOT_ROLE = "assistant"
+
     def __init__(self, title: str, response_callback: Optional[Callable] = None):
-        """Initialize the chat UI.
+        """
+        Initialize the chat UI.
 
         Args:
-            title: Title for the chat window
-            response_callback: Optional function to process user input and return bot response
+            title (str): Title for the chat window
+            response_callback (Callable, optional): Custom function to generate bot responses.
         """
         self.title = title
+
         self.response_callback = self.default_response
+
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
-        self.USER_ROLE = "user"
-        self.BOT_ROLE = "assistant"
-        self.bot = HRChacha()
+        if "bot" not in st.session_state:
+            st.session_state.bot = HRChacha()
 
-        self._initialize_ui()
+        self._render_ui()
 
-    def _initialize_ui(self):
-        """Set up the initial UI components."""
+    def _render_ui(self):
+        """Set up UI layout and render messages."""
         st.set_page_config(page_title=self.title)
         st.title(self.title)
 
-        self._display_messages()
+        self._display_all_messages()
 
+    def _display_all_messages(self):
+        messages = st.session_state.get("messages", [])
 
-    def _display_messages(self):
-        """Display all messages in the chat history."""
-        for message in st.session_state.messages:
+        if not messages:
+            return
+
+        # If there's a streaming message, stream only the last one
+        stream_last = st.session_state.get("stream_next", False)
+
+        for i, message in enumerate(messages):
+            is_last = i == len(messages) - 1
+
             with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+                if is_last and stream_last:
+                    st.write_stream(self._stream_response(message["content"]))
+                else:
+                    st.markdown(message["content"])
+
+        st.session_state.stream_next = False
+
+    def _stream_response(self, text: str):
+        """Yields the text character by character for a streaming effect."""
+        for char in text:
+            yield char
+            time.sleep(0.01)
 
     def process_user_input(self, prompt: str):
-        """Handle user input and generate bot response.
-
-        Args:
-            prompt: The user's input message
-        """
-        if not prompt.strip():
+        prompt = prompt.strip()
+        if not prompt:
             return
-        st.session_state.messages.append({"role": self.USER_ROLE, "content": prompt})
 
-        bot_response = self.response_callback(prompt)
-        self._display_bot_response(bot_response)
+        st.session_state.messages.append({
+            "role": self.USER_ROLE,
+            "content": prompt
+        })
 
+        response = self.response_callback(prompt)
+
+        # Append bot message but mark it to be streamed
+        st.session_state.messages.append({
+            "role": self.BOT_ROLE,
+            "content": response
+        })
+
+        st.session_state.stream_next = True
         st.rerun()
 
-    def _display_bot_response(self, response: str):
-        """Display the bot's response.
-
-        Args:
-            response: The bot's response message
-        """
-        if response:
-            st.session_state.messages.append({
-                "role": self.BOT_ROLE,
-                "content": f"Bot: {response}"
-            })
-
-
     def default_response(self, prompt: str) -> str:
-        """Default response handler if none provided.
+        """
+        Default response generator using HRChacha backend.
 
         Args:
-            prompt: The user's input message
+            prompt (str): User input.
 
         Returns:
-            A simple echo response
+            str: Bot response.
         """
-
-        return self.bot.get_response(prompt)
+        return st.session_state.bot.get_response(prompt)
