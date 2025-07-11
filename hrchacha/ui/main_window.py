@@ -6,11 +6,10 @@ import streamlit as st
 
 from hrchacha.components.chatbot import HRChacha
 from hrchacha.constants import (
-    SYSTEM_PROMPT,
     BOT_ROLE,
-    USER_ROLE,
-    INITIAL_GREETING_MESSAGE
+    USER_ROLE
 )
+from hrchacha.prompts import SYSTEM_PROMPT, INITIAL_GREETING_MESSAGE
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
 

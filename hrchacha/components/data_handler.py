@@ -22,7 +22,7 @@ class Database:
 
             self.client = MongoClient(uri, server_api=ServerApi('1'))
             self.db = self.client[DB_NAME]
-            self.collection: Collection = self.db[COLLECTION_NAME]  # Collection name
+            self.collection: Collection = self.db[COLLECTION_NAME]
 
 
             self.client.admin.command("ping")
