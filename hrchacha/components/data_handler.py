@@ -1,32 +1,36 @@
 import os
 import sys
-from typing import Optional
 
+from dotenv import load_dotenv
+from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from pymongo.collection import Collection
-from dotenv import load_dotenv
 
 from hrchacha.constants import DB_NAME, COLLECTION_NAME
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
+
 load_dotenv()
 
 
 class Database:
     def __init__(self):
+
         try:
+            # Get URI from .env file.
             uri = os.getenv("MONGO_URI")
+
             if not uri:
                 raise ValueError("MONGO_URI not set in environment variables.")
 
             self.client = MongoClient(uri, server_api=ServerApi('1'))
+
             self.db = self.client[DB_NAME]
             self.collection: Collection = self.db[COLLECTION_NAME]
 
 
             self.client.admin.command("ping")
-            logging.info("✅ Connected to MongoDB")
+            logging.info("Connected to MongoDB")
 
         except Exception as e:
             raise HRChachaException(e, sys)
@@ -35,21 +39,17 @@ class Database:
         """Insert a new candidate record. Returns True if successful."""
         try:
             email = user_data.get("email")
+
+            #Check if user already exists and update it.
             existing = self.collection.find_one({"email":email })
             if existing:
                 return self.update_user(email, user_data)
 
 
             self.collection.insert_one(user_data)
-            logging.info("✅ User data inserted")
-            return True
-        except Exception as e:
-            raise HRChachaException(e, sys)
+            logging.info("User data inserted")
 
-    def get_user_by_email(self, email: str) -> Optional[dict]:
-        """Retrieve user data by email."""
-        try:
-            return self.collection.find_one({"email": email})
+            return True
         except Exception as e:
             raise HRChachaException(e, sys)
 
@@ -64,7 +64,7 @@ class Database:
                 logging.info("User data updated")
                 return True
             else:
-                logging.info("⚠️ No data was updated")
+                logging.info("No data was updated")
                 return False
         except Exception as e:
             raise HRChachaException(e, sys)

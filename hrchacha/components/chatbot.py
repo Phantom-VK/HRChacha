@@ -16,14 +16,21 @@ class HRChacha:
 
     def __init__(self):
         self.message_history = st.session_state.messages
-        self.llm = LLM()
-        self.db = Database()
 
-        if "user_interactions" not in st.session_state:
-            st.session_state.user_interactions = 0
+        if "llm" not in st.session_state:
+            st.session_state.llm = LLM()
+
+        if "database" not in st.session_state:
+            st.session_state.database = Database()
+
+        self.llm = st.session_state.llm
+        self.db = st.session_state.database
 
 
-    def get_response_stream(self) -> str:
+    def get_response_stream(self):
+        """
+        Gets generator response from LLM.
+        """
         try:
 
             return self.llm.get_llama_response()
@@ -31,7 +38,13 @@ class HRChacha:
         except Exception as e:
             raise HRChachaException(e, sys)
 
-    def _extract_user_info(self, corpus) -> str:
+    def _extract_user_info(self, corpus:str) -> str:
+        """
+        Extracts user data from the llm response and saves to
+        database
+        :param corpus: str llm response
+        :return: str Extracted data
+        """
         try:
             logging.info("Extracting user info from EXTRACT101 message...")
 
@@ -55,9 +68,16 @@ class HRChacha:
             raise HRChachaException(e, sys)
 
     def stream_and_capture_response(self, response_generator):
+        """
+        Gets response from llm via provided generator and adds in current session messages.
+        Checks for USER_DATA inside response and forwards to extract.
+        :param response_generator: llm response generator
+        :return: Nothing
+        """
         try:
             logging.info("Streaming and capturing response...")
 
+            # TODO : Use write stream for bot response
             response_box = st.empty()
 
             full_response = ""

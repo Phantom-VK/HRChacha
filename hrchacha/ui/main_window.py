@@ -1,5 +1,4 @@
 import sys
-import time
 from typing import Optional, Callable
 
 import streamlit as st
@@ -9,9 +8,10 @@ from hrchacha.constants import (
     BOT_ROLE,
     USER_ROLE
 )
-from hrchacha.prompts import SYSTEM_PROMPT, INITIAL_GREETING_MESSAGE
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
+from hrchacha.prompts import SYSTEM_PROMPT, INITIAL_GREETING_MESSAGE
+from hrchacha.utils.general_utils import get_random_chacha_thinking_line
 
 
 class MainWindowUI:
@@ -42,7 +42,7 @@ class MainWindowUI:
         """Render the chatbot UI."""
         try:
             st.set_page_config(page_title=self.title)
-            st.markdown(f"# 👋 {self.title}")
+            st.markdown(f"# 👴 {self.title}")
             self._display_all_messages()
         except Exception as e:
             raise HRChachaException(e, sys)
@@ -54,18 +54,12 @@ class MainWindowUI:
                 if message["role"] == BOT_ROLE and message["content"] == SYSTEM_PROMPT:
                     continue  # skip displaying raw system prompt
 
-                avatar = "🧑" if message["role"] == USER_ROLE else "🤖"
+                avatar = "user" if message["role"] == USER_ROLE else "ai"
                 with st.chat_message(message["role"], avatar=avatar):
                     st.markdown(message["content"])
 
         except Exception as e:
             raise HRChachaException(e, sys)
-
-    def _stream_response(self, text: str):
-        """Yields characters one by one for a typing effect."""
-        for char in text:
-            yield char
-            time.sleep(0.01)
 
     def process_user_input(self, prompt: str):
         """Processes the user input and triggers the bot's response."""
@@ -79,14 +73,12 @@ class MainWindowUI:
                 "content": prompt
             })
 
-            with st.chat_message(BOT_ROLE, avatar="🤖"):
+            with st.chat_message(BOT_ROLE, avatar="ai"):
                 thinking = st.empty()
-                thinking.markdown("🧠 *HR Chacha is thinking...*")
+                thinking.markdown(get_random_chacha_thinking_line())
 
-            response_generator = st.session_state.bot.get_response_stream()
-
-            with st.chat_message(BOT_ROLE, avatar="🤖"):
-                st.session_state.bot.stream_and_capture_response(response_generator)
+            with st.chat_message(BOT_ROLE, avatar="ai"):
+                st.session_state.bot.stream_and_capture_response(st.session_state.bot.get_response_stream())
 
             st.rerun()
 
