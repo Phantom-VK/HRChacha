@@ -1,6 +1,70 @@
+import os
+import sys
+from typing import Optional
+
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from pymongo.collection import Collection
+from dotenv import load_dotenv
+
+from hrchacha.constants import DB_NAME, COLLECTION_NAME
+from hrchacha.exceptions.exception import HRChachaException
+from hrchacha.logging.logger import logging
+load_dotenv()
 
 
 class Database:
-
     def __init__(self):
-        pass
+        try:
+            uri = os.getenv("MONGO_URI")
+            if not uri:
+                raise ValueError("MONGO_URI not set in environment variables.")
+
+            self.client = MongoClient(uri, server_api=ServerApi('1'))
+            self.db = self.client[DB_NAME]
+            self.collection: Collection = self.db[COLLECTION_NAME]  # Collection name
+
+
+            self.client.admin.command("ping")
+            print("✅ Connected to MongoDB")
+
+        except Exception as e:
+            raise HRChachaException(e, sys)
+
+    def insert_user(self, user_data: dict) -> bool:
+        """Insert a new candidate record. Returns True if successful."""
+        try:
+            email = user_data.get("email")
+            existing = self.collection.find_one({"email":email })
+            if existing:
+                return self.update_user(email, user_data)
+
+
+            self.collection.insert_one(user_data)
+            print("✅ User data inserted")
+            return True
+        except Exception as e:
+            raise HRChachaException(e, sys)
+
+    def get_user_by_email(self, email: str) -> Optional[dict]:
+        """Retrieve user data by email."""
+        try:
+            return self.collection.find_one({"email": email})
+        except Exception as e:
+            raise HRChachaException(e, sys)
+
+    def update_user(self, email: str, updated_data: dict) -> bool:
+        """Update an existing user's record."""
+        try:
+            result = self.collection.update_one(
+                {"email": email},
+                {"$set": updated_data}
+            )
+            if result.modified_count:
+                logging.info("User data updated")
+                return True
+            else:
+                print("⚠️ No data was updated")
+                return False
+        except Exception as e:
+            raise HRChachaException(e, sys)

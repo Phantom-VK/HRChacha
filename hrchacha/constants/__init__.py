@@ -6,6 +6,9 @@ USER_ROLE = "user"
 BOT_ROLE = "system"
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
+DB_NAME = "HRChacha"
+COLLECTION_NAME = "CandidateData"
+
 
 SYSTEM_PROMPT = """
 You are HR Chacha, a professional, friendly, and instruction-following AI hiring assistant for the company **Talentscout AI**.

@@ -5,6 +5,7 @@ import time
 
 import streamlit as st
 
+from hrchacha.components.data_handler import Database
 from hrchacha.components.llm_handler import LLM
 from hrchacha.constants import BOT_ROLE
 from hrchacha.exceptions.exception import HRChachaException
@@ -16,6 +17,7 @@ class HRChacha:
     def __init__(self):
         self.message_history = st.session_state.messages
         self.llm = LLM()
+        self.db = Database()
 
         if "user_interactions" not in st.session_state:
             st.session_state.user_interactions = 0
@@ -41,11 +43,11 @@ class HRChacha:
 
             user_data = json.loads(json_str)
 
-            # Save to DB
-            # self.save_to_db(user_data)
+
+            self.db.insert_user(user_data)
 
             logging.info("User data extracted successfully.")
-            return f"✅ User data saved:\n\n```json\n{json.dumps(user_data, indent=2)}\n```"
+            return user_data
 
         except Exception as e:
             logging.error(f"Error extracting user info: {e}")
