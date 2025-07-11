@@ -1,46 +1,97 @@
-from typing import List
+import json
+import re
+import sys
+import time
 
 import streamlit as st
 
+from hrchacha.components.llm_handler import LLM
+from hrchacha.constants import BOT_ROLE
+from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
-from hrchacha.constants import ConversationState, User, Job, GreetingMessage
 
 
 class HRChacha:
 
     def __init__(self):
-        self.state = ConversationState.GREETING
-        self.user = User()
         self.message_history = st.session_state.messages
+        self.llm = LLM()
 
         if "user_interactions" not in st.session_state:
             st.session_state.user_interactions = 0
 
 
-    def get_response(self, prompt:str) -> str | None:
-        logging.info("Getting bot response")
-        if self.state == ConversationState.GREETING:
-            if st.session_state.user_interactions == 0:
-                st.session_state.new_user = False
-                st.session_state.user_interactions += 1
-                return GreetingMessage.get_main_greeting()
-            else:
-                st.session_state.user_interactions += 1
-                return GreetingMessage.get_welcome_back_message()
-        st.session_state.user_interactions += 1
-        return self.process_user_prompt(prompt)
+    def get_response_stream(self) -> str:
+        try:
+
+            return self.llm.get_llama_response()
+
+        except Exception as e:
+            raise HRChachaException(e, sys)
+
+    def _extract_user_info(self, corpus) -> str:
+        try:
+            logging.info("Extracting user info from EXTRACT101 message...")
+
+            match = re.search(r'USER_DATA.*?({.*})', corpus, re.DOTALL)
+            if not match:
+                raise ValueError("No JSON object found in the message.")
+
+            json_str = match.group(1)
+
+            user_data = json.loads(json_str)
+
+            # Save to DB
+            # self.save_to_db(user_data)
+
+            logging.info("User data extracted successfully.")
+            return f"✅ User data saved:\n\n```json\n{json.dumps(user_data, indent=2)}\n```"
+
+        except Exception as e:
+            logging.error(f"Error extracting user info: {e}")
+            raise HRChachaException(e, sys)
+
+    def stream_and_capture_response(self, response_generator):
+        try:
+            logging.info("Streaming and capturing response...")
+
+            response_box = st.empty()
+
+            full_response = ""
+
+            stream_container = ""
+
+            for chunk in response_generator:
+                if hasattr(chunk, "choices"):
+                    delta = chunk.choices[0].delta.content
+                    if delta:
+
+                        full_response += delta
+                        stream_container += delta
+                        response_box.markdown(stream_container)
+                        time.sleep(0.01)
+
+            response_box.markdown(full_response)
+
+            st.session_state.messages.append({
+                "role": BOT_ROLE,
+                "content": full_response
+            })
+
+            if "USER_DATA" in full_response:
+                extracted_result = self._extract_user_info(full_response)
+
+                st.session_state.user_data = extracted_result
+
+                print(st.session_state.user_data)
+
+        except Exception as e:
+            raise HRChachaException(e, sys)
 
 
-    def validate_user_info(self) -> (bool, str):
-        pass
 
-    def generate_questions(self):
-        pass
 
-    def suggest_jobs(self) -> List[Job]:
-        pass
 
-    def process_user_prompt(self, prompt):
 
-        pass
+
 

@@ -1,113 +1,95 @@
 import sys
 import time
-import streamlit as st
 from typing import Optional, Callable
 
+import streamlit as st
+
 from hrchacha.components.chatbot import HRChacha
+from hrchacha.constants import (
+    SYSTEM_PROMPT,
+    BOT_ROLE,
+    USER_ROLE,
+    INITIAL_GREETING_MESSAGE
+)
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
 
 
 class MainWindowUI:
-    USER_ROLE = "user"
-    BOT_ROLE = "assistant"
-
     def __init__(self, title: str, response_callback: Optional[Callable] = None):
-        """
-        Initialize the chat UI.
-
-        Args:
-            title (str): Title for the chat window
-            response_callback (Callable, optional): Custom function to generate bot responses.
-        """
         self.title = title
 
-        self.response_callback = self.default_response
+        self._initialize_state()
+        self._render_ui()
 
-
+    def _initialize_state(self):
+        """Initializes session state variables for chatbot."""
         if "messages" not in st.session_state:
-            st.session_state.messages = []
-            logging.info("Initialzed session messages")
+            st.session_state.messages = [
+                {"role": BOT_ROLE, "content": SYSTEM_PROMPT},
+                {"role": BOT_ROLE, "content": INITIAL_GREETING_MESSAGE}
+            ]
+            logging.info("Initialized session messages")
+
+        if "user_data" not in st.session_state:
+            st.session_state.user_data = ""
+            logging.info("Initialized user data")
 
         if "bot" not in st.session_state:
             st.session_state.bot = HRChacha()
-            logging.info("Initialized bot")
-
-        self._render_ui()
+            logging.info("Initialized HRChacha bot")
 
     def _render_ui(self):
-        """Set up UI layout and render messages."""
+        """Render the chatbot UI."""
         try:
             st.set_page_config(page_title=self.title)
-            st.title(self.title)
-
+            st.markdown(f"# 👋 {self.title}")
             self._display_all_messages()
         except Exception as e:
-            raise  HRChachaException(e, sys)
+            raise HRChachaException(e, sys)
 
     def _display_all_messages(self):
-
+        """Displays all previous chat messages (except the system prompt)."""
         try:
-            messages = st.session_state.get("messages", [])
+            for i, message in enumerate(st.session_state.messages):
+                if message["role"] == BOT_ROLE and message["content"] == SYSTEM_PROMPT:
+                    continue  # skip displaying raw system prompt
 
-            if not messages:
-                return
+                avatar = "🧑" if message["role"] == USER_ROLE else "🤖"
+                with st.chat_message(message["role"], avatar=avatar):
+                    st.markdown(message["content"])
 
-            # If there's a streaming message, stream only the last one
-            stream_last = st.session_state.get("stream_next", False)
-
-            for i, message in enumerate(messages):
-                is_last = i == len(messages) - 1
-
-                with st.chat_message(message["role"]):
-                    if is_last and stream_last:
-                        st.write_stream(self._stream_response(message["content"]))
-                    else:
-                        st.markdown(message["content"])
-
-            st.session_state.stream_next = False
         except Exception as e:
             raise HRChachaException(e, sys)
 
     def _stream_response(self, text: str):
-        """Yields the text character by character for a streaming effect."""
+        """Yields characters one by one for a typing effect."""
         for char in text:
             yield char
             time.sleep(0.01)
 
     def process_user_input(self, prompt: str):
-        logging.info("Processing user input")
+        """Processes the user input and triggers the bot's response."""
         try:
             prompt = prompt.strip()
             if not prompt:
                 return
 
             st.session_state.messages.append({
-                "role": self.USER_ROLE,
+                "role": USER_ROLE,
                 "content": prompt
             })
 
-            response = self.response_callback(prompt)
+            with st.chat_message(BOT_ROLE, avatar="🤖"):
+                thinking = st.empty()
+                thinking.markdown("🧠 *HR Chacha is thinking...*")
 
-            # Append bot message but mark it to be streamed
-            st.session_state.messages.append({
-                "role": self.BOT_ROLE,
-                "content": response
-            })
+            response_generator = st.session_state.bot.get_response_stream()
 
-            st.session_state.stream_next = True
+            with st.chat_message(BOT_ROLE, avatar="🤖"):
+                st.session_state.bot.stream_and_capture_response(response_generator)
+
             st.rerun()
+
         except Exception as e:
             raise HRChachaException(e, sys)
-
-    def default_response(self, prompt: str) -> str:
-        """
-        Default response generator using HRChacha backend.
-
-        Args:
-            prompt (str): User input.
-
-        Returns:
-            str: Bot response.
-        """
-        return st.session_state.bot.get_response(prompt)
