@@ -26,7 +26,7 @@ class Database:
 
 
             self.client.admin.command("ping")
-            print("✅ Connected to MongoDB")
+            logging.info("✅ Connected to MongoDB")
 
         except Exception as e:
             raise HRChachaException(e, sys)
@@ -41,7 +41,7 @@ class Database:
 
 
             self.collection.insert_one(user_data)
-            print("✅ User data inserted")
+            logging.info("✅ User data inserted")
             return True
         except Exception as e:
             raise HRChachaException(e, sys)
@@ -64,7 +64,7 @@ class Database:
                 logging.info("User data updated")
                 return True
             else:
-                print("⚠️ No data was updated")
+                logging.info("⚠️ No data was updated")
                 return False
         except Exception as e:
             raise HRChachaException(e, sys)
