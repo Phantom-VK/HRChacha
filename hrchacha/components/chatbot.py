@@ -42,6 +42,7 @@ class HRChacha:
             json_str = match.group(1)
 
             user_data = json.loads(json_str)
+            user_data["session_chat"] = st.session_state.messages
 
 
             self.db.insert_user(user_data)
