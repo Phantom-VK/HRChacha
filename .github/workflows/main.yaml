@@ -1,4 +1,4 @@
-name: CI/CD to AWS ECR
+name: CI/CD to AWS ECR, EC2
 
 on:
   push:
