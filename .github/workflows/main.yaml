@@ -46,3 +46,38 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }} .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
+        
+
+  deploy-on-ec2:
+    name: Deploy to EC2
+    needs: build-and-push-ecr
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Pull and Run Docker Image on EC2
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+        run: |
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
+          
+          docker stop hrchacha || true && docker rm hrchacha || true
+
+          docker run -d -p 8501:8501 --name hrchacha \
+            -e MONGO_URI=${{ secrets.MONGO_URI }} \
+            -e TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }} \
+            $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
