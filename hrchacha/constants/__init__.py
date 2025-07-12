@@ -6,6 +6,8 @@ USER_ROLE = "user"
 BOT_ROLE = "system"
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
+USER_DATA_PATTERN = r'USER_DATA\s*=\s*({.*?})'
+
 DB_NAME = "HRChacha"
 COLLECTION_NAME = "CandidateData"
 
