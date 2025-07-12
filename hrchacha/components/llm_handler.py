@@ -28,9 +28,8 @@ class LLM:
             response = self.client.chat.completions.create(
                 model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
                 messages=st.session_state.messages,
-                max_tokens=456,
                 stream=True,
-                temperature=0.3,
+                temperature=0.4,
                 top_p=0.9,
                 repetition_penalty=1.1,
                 presence_penalty=0.0,
