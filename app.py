@@ -10,7 +10,7 @@ from hrchacha.ui.main_window import MainWindowUI
 if __name__ == "__main__":
     try:
         main_app = MainWindowUI(
-                title=" HRChacha – Your Tech Job Buddy"
+                title="👴 HRChacha – Your Tech Job Uncle"
             )
 
         if prompt := st.chat_input("What's up?", key=USER_CHAT_INPUT_KEY):
