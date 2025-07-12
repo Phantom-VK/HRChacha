@@ -68,6 +68,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Clean old containers and images
+        run: |
+          docker stop $(docker ps -aq) || true
+          docker rm -f $(docker ps -aq) || true
+          docker rmi -f $(docker images -aq) || true
+          docker volume rm $(docker volume ls -q) || true
+          docker network prune -f || true
+
       - name: Pull and Run Docker Image on EC2
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
