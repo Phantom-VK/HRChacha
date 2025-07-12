@@ -6,7 +6,7 @@ import streamlit as st
 from hrchacha.components.chatbot import HRChacha
 from hrchacha.constants import (
     BOT_ROLE,
-    USER_ROLE
+    USER_ROLE, PAGE_CONFIG_MENU_ITEMS
 )
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
@@ -17,6 +17,14 @@ from hrchacha.utils.general_utils import get_random_chacha_thinking_line
 class MainWindowUI:
     def __init__(self, title: str, response_callback: Optional[Callable] = None):
         self.title = title
+
+        st.set_page_config(
+            page_title=self.title,
+            page_icon="🤖",
+            layout="wide",
+            initial_sidebar_state="expanded",
+            menu_items=PAGE_CONFIG_MENU_ITEMS
+        )
 
         self._initialize_state()
         self._render_ui()
@@ -43,7 +51,7 @@ class MainWindowUI:
         """Render the chatbot UI."""
         try:
             st.set_page_config(page_title=self.title)
-            st.markdown(f"# 👴 {self.title}")
+            st.markdown(self.title)
             self._display_all_messages()
         except Exception as e:
             err = HRChachaException(e, sys)
