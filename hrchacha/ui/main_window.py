@@ -50,7 +50,7 @@ class MainWindowUI:
     def _display_all_messages(self):
         """Displays all previous chat messages (except the system prompt)."""
         try:
-            for i, message in enumerate(st.session_state.messages):
+            for message in st.session_state.messages:
                 if message["role"] == BOT_ROLE and message["content"] == SYSTEM_PROMPT:
                     continue  # skip displaying raw system prompt
 
@@ -73,14 +73,18 @@ class MainWindowUI:
                 "content": prompt
             })
 
-            with st.chat_message(BOT_ROLE, avatar="ai"):
-                thinking = st.empty()
-                thinking.markdown(get_random_chacha_thinking_line())
+            with st.chat_message(USER_ROLE, avatar="user"):
+                st.markdown(prompt)
 
             with st.chat_message(BOT_ROLE, avatar="ai"):
-                st.session_state.bot.stream_and_capture_response(st.session_state.bot.get_response_stream())
 
-            st.rerun()
+                thinking_placeholder = st.empty()
+                thinking_placeholder.markdown(get_random_chacha_thinking_line())
+
+                response_stream = st.session_state.bot.get_response_stream()
+
+                thinking_placeholder.empty()
+                st.session_state.bot.stream_and_capture_response(response_stream)
 
         except Exception as e:
             raise HRChachaException(e, sys)
