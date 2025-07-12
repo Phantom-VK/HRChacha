@@ -74,10 +74,6 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
         run: |
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
-          
-          docker stop hrchacha || true && docker rm hrchacha || true
-
-          docker run -d -p 8501:8501 --name hrchacha \
-            -e MONGO_URI=${{ secrets.MONGO_URI }} \
-            -e TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }} \
-            $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
+          docker stop hrchacha || true
+          docker rm hrchacha || true
+          docker run -d -p 8501:8501 --name hrchacha -e MONGO_URI=${{ secrets.MONGO_URI }} -e TOGETHER_API_KEY=${{ secrets.TOGETHER_API_KEY }} $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
