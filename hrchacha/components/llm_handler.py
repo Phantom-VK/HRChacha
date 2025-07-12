@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from together import Together
 
 from hrchacha.exceptions.exception import HRChachaException
-
+from  hrchacha.logging.logger import logging
 load_dotenv()
 
 class LLM:
@@ -40,7 +40,10 @@ class LLM:
             return response
 
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
+            return None
+
 
 
 

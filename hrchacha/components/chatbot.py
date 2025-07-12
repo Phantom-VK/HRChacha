@@ -1,7 +1,6 @@
 import json
 import re
 import sys
-import time
 
 import streamlit as st
 
@@ -33,9 +32,11 @@ class HRChacha:
         try:
             return self.llm.get_llama_response()
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
+            return None
 
-    def _extract_user_info(self, corpus: str) -> str:
+    def _extract_user_info(self, corpus: str) -> str | None:
         """
         Extracts user data from the llm response and saves to
         database
@@ -60,8 +61,9 @@ class HRChacha:
             return user_data
 
         except Exception as e:
-            logging.error(f"Error extracting user info: {e}")
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
+            return None
 
     def stream_and_capture_response(self, response_generator):
         """
@@ -102,4 +104,5 @@ class HRChacha:
                 print(st.session_state.user_data)
 
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))

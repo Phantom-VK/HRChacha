@@ -10,7 +10,7 @@ from hrchacha.constants import (
 )
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
-from hrchacha.prompts import SYSTEM_PROMPT, INITIAL_GREETING_MESSAGE
+from hrchacha.prompts import SYSTEM_PROMPT, INITIAL_GREETING_MESSAGE, CHATBOT_REFERENCE_QUESTIONS
 from hrchacha.utils.general_utils import get_random_chacha_thinking_line
 
 
@@ -26,6 +26,7 @@ class MainWindowUI:
         if "messages" not in st.session_state:
             st.session_state.messages = [
                 {"role": BOT_ROLE, "content": SYSTEM_PROMPT},
+                {"role": BOT_ROLE, "content": CHATBOT_REFERENCE_QUESTIONS},
                 {"role": BOT_ROLE, "content": INITIAL_GREETING_MESSAGE}
             ]
             logging.info("Initialized session messages")
@@ -45,13 +46,14 @@ class MainWindowUI:
             st.markdown(f"# 👴 {self.title}")
             self._display_all_messages()
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
 
     def _display_all_messages(self):
         """Displays all previous chat messages (except the system prompt)."""
         try:
             for message in st.session_state.messages:
-                if message["role"] == BOT_ROLE and message["content"] == SYSTEM_PROMPT:
+                if message["role"] == BOT_ROLE and message["content"] == SYSTEM_PROMPT or message["content"] == CHATBOT_REFERENCE_QUESTIONS :
                     continue  # skip displaying raw system prompt
 
                 avatar = "user" if message["role"] == USER_ROLE else "ai"
@@ -59,7 +61,8 @@ class MainWindowUI:
                     st.markdown(message["content"])
 
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
 
     def process_user_input(self, prompt: str):
         """Processes the user input and triggers the bot's response."""
@@ -87,4 +90,5 @@ class MainWindowUI:
                 st.session_state.bot.stream_and_capture_response(response_stream)
 
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))

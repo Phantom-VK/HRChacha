@@ -33,7 +33,8 @@ class Database:
             logging.info("Connected to MongoDB")
 
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
 
     def insert_user(self, user_data: dict) -> bool:
         """Insert a new candidate record. Returns True if successful."""
@@ -51,7 +52,9 @@ class Database:
 
             return True
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
+            return False
 
     def update_user(self, email: str, updated_data: dict) -> bool:
         """Update an existing user's record."""
@@ -67,4 +70,6 @@ class Database:
                 logging.info("No data was updated")
                 return False
         except Exception as e:
-            raise HRChachaException(e, sys)
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
+            return False
