@@ -29,3 +29,9 @@ HR_CHACHA_THINKING_LINES = [
     "🗂️ *HR Chacha is checking the dusty HR files...*",
     "📬 *HR Chacha is drafting a message to his cousin in Big Tech...*"
 ]
+
+PAGE_CONFIG_MENU_ITEMS = {
+                'Get Help': 'https://github.com/Phantom-VK/HRChacha',
+                'Report a bug': 'https://github.com/Phantom-VK/HRChacha/issues',
+                'About': 'HR Chacha - Your AI-powered HR assistant for career guidance and interview preparation.'
+            }
