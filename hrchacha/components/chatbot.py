@@ -44,7 +44,7 @@ class HRChacha:
         :return: str Extracted data
         """
         try:
-            logging.info("Extracting user info from EXTRACT101 message...")
+            logging.info("Extracting user info from USER_DATA message...")
 
             match = re.search(USER_DATA_PATTERN, corpus, re.DOTALL)
             if not match:
