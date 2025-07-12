@@ -90,13 +90,13 @@ streamlit run app.py
 
 Prompting strategy follows best practices:
 
-* Starts with a clear role definition: "You are HR Chacha..."
+* Starts with a clear role definition
 * Instructionally structured in numbered format
 * Uses trigger phrase `USER_DATA` to tag final JSON output
 * Prompts candidate to answer tech questions with number and answer pairing
 * Handles irrelevant input with fallback behavior
 
-> See the full prompt in [`hrchacha/constants`](./hrchacha/constants)
+> See the full prompt in [`hrchacha/prompts`](./hrchacha/prompts/__init__.py)
 
 ---
 
@@ -105,7 +105,7 @@ Prompting strategy follows best practices:
 
 * **Docker**: for containerized development and deployment
 * **GitHub Actions**: to automate test and deployment workflows
-* **AWS EC2 / ECS**: for cloud hosting + persistent storage
+* **AWS EC2 / ECR**: for cloud hosting + storing image
 
 ```mermaid
 graph TD;
