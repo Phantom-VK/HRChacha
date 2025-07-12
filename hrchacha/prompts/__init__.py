@@ -1,5 +1,6 @@
 CHATBOT_REFERENCE_QUESTIONS = """
 REFERENCE QUESTIONS TO ASK TO CANDIDATE.
+You can ask questions like following based on user's tech stack.
 # Easy Level Questions (Short Answers)
 
 ## Programming Basics
