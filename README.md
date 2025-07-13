@@ -76,7 +76,7 @@ streamlit run app.py
 * **Backend**: Python
 * **LLM API**: Together AI (LLaMA 3.3 70B Instruct Turbo)
 * **Database**: MongoDB Atlas
-* **Deploymet**: Github Workflow, Runners, AWS ECR, AWS EC2
+* **Deploymet**: Github Workflow, Runners, Docker,  AWS ECR, AWS EC2
 * **Prompt Management**: Custom, static system prompt with extract logic
 
 ### 📦 Libraries Used
@@ -109,7 +109,7 @@ Prompting strategy follows best practices:
 ---
 
 
-## 📦 CI/CD & Deployment *(coming soon)*
+## 📦 CI/CD & Deployment
 
 * **Docker**: for containerized development and deployment
 * **GitHub Actions**: to automate test and deployment workflows
