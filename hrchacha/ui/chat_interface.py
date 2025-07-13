@@ -16,8 +16,8 @@ from hrchacha.utils.general_utils import get_random_chacha_thinking_line
 
 class MainWindowUI:
     def __init__(self, title: str, response_callback: Optional[Callable] = None):
-        self.title = title
 
+        self.title = title
         st.set_page_config(
             page_title=self.title,
             page_icon="🤖",

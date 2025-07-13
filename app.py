@@ -4,8 +4,7 @@ import streamlit as st
 
 from hrchacha.constants import USER_CHAT_INPUT_KEY
 from hrchacha.exceptions.exception import HRChachaException
-from hrchacha.ui.main_window import MainWindowUI
-
+from hrchacha.ui.chat_interface import MainWindowUI
 
 if __name__ == "__main__":
     try:
