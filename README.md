@@ -130,9 +130,3 @@ graph TD;
 
 * 👤 **Vikramaditya Khupse**
   Final Year IT | ML + Fullstack | Building real-world solutions
-
----
-
-## 📜 License
-
-MIT License
