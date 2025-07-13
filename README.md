@@ -17,6 +17,13 @@
 * Outputs final structured data for HR teams to assess
 
 ---
+## Screenshots
+![Home Page](assets/screenshots/ss1.png)
+![Home Page](assets/screenshots/ss2.png)
+![Home Page](assets/screenshots/ss3.png)
+___
+
+
 
 ## 🚀 Installation Instructions
 
