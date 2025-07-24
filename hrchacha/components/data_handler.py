@@ -1,6 +1,7 @@
 import os
 import sys
 
+import streamlit as st
 from dotenv import load_dotenv
 from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
@@ -18,7 +19,7 @@ class Database:
 
         try:
             # Get URI from .env file.
-            uri = os.getenv("MONGO_URI")
+            uri = st.secrets["MONGO_URI"]
 
             if not uri:
                 raise ValueError("MONGO_URI not set in environment variables.")

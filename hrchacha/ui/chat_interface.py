@@ -63,7 +63,6 @@ class MainWindowUI:
             for message in st.session_state.messages:
                 if message["role"] == BOT_ROLE and message["content"] == SYSTEM_PROMPT or message["content"] == CHATBOT_REFERENCE_QUESTIONS :
                     continue  # skip displaying raw system prompt
-
                 avatar = "user" if message["role"] == USER_ROLE else "ai"
                 with st.chat_message(message["role"], avatar=avatar):
                     st.markdown(message["content"])

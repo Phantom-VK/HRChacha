@@ -11,7 +11,7 @@ load_dotenv()
 
 class LLM:
     def __init__(self):
-        self.client = Together(api_key=os.getenv("TOGETHER_API_KEY"))
+        self.client = Together(api_key=st.secrets["TOGETHER_API_KEY"])
 
 
     def get_llama_response(self):
