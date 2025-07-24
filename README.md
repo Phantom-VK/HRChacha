@@ -4,6 +4,8 @@
 
 > **HR Chacha** is an AI-powered hiring assistant chatbot built using **Streamlit**, **LLaMA 3.3 70B**, **MongoDB** and deployed with **AWS ECR + EC2**. It simulates an intelligent recruiter that collects candidate details, asks technical questions based on their skills, and formats their data into a clean JSON format for HR/admins to evaluate.
 
+Live link: Live Deployment Paused
+
 ---
 
 ## 📌 Project Overview
