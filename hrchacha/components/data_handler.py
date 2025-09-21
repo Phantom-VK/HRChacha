@@ -13,10 +13,8 @@ from hrchacha.logging.logger import logging
 
 load_dotenv()
 
-
 class Database:
     def __init__(self):
-
         try:
             # Get URI from .env file.
             uri = st.secrets["MONGO_URI"]
