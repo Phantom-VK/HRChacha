@@ -88,5 +88,5 @@ jobs:
 
           docker run -d -p 8501:8501 --name hrchacha \
             -e MONGO_URI="${{ secrets.MONGO_URI }}" \
-            -e TOGETHER_API_KEY="${{ secrets.TOGETHER_API_KEY }}" \
+            -e GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
             $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}

@@ -1,9 +1,10 @@
-import sys
 import logging
-import streamlit as st
-from typing import Iterator, Optional, Any
+import sys
+from typing import Optional, Any
 
+import streamlit as st
 from groq import Groq
+import os
 from hrchacha.exceptions.exception import HRChachaException
 
 
@@ -26,14 +27,26 @@ class LLM:
 
     def __init__(self):
         try:
-            api_key = st.secrets.get("GROQ_API_KEY") or st.secrets.get("TOGETHER_API_KEY")
+            # Try loading from streamlit secrets (if possible)
+            api_key = None
+            try:
+                import streamlit as st
+                if hasattr(st, "secrets"):
+                    api_key = st.secrets.get("GROQ_API_KEY")
+            except ImportError:
+                pass
+
+            # If not found, fallback to environment variable
             if not api_key:
-                raise ValueError("GROQ_API_KEY is not set in Streamlit secrets.")
+                api_key = os.getenv("GROQ_API_KEY")
+
+            if not api_key:
+                raise ValueError("GROQ_API_KEY is not set in Streamlit secrets or environment variables.")
+
             self.client = Groq(api_key=api_key)
+
         except Exception as e:
-            err = HRChachaException(e, sys)
-            logging.error(str(err))
-            raise
+            print(f"API Key error: {e}")
 
     def get_llama_response(self, *, stream: bool = True, model: Optional[str] = None) -> Optional[Any]:
         """
