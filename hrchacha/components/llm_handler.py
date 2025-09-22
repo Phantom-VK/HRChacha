@@ -34,7 +34,8 @@ class LLM:
             self.client = Groq(api_key=api_key)
 
         except Exception as e:
-            print(f"API Key error: {e}")
+            err = HRChachaException(e, sys)
+            logging.error(str(err))
 
     def get_llama_response(self, *, stream: bool = True, model: Optional[str] = None) -> Optional[Any]:
         """
