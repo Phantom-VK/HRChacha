@@ -4,8 +4,9 @@ from typing import Optional, Any
 
 import streamlit as st
 from groq import Groq
-import os
+
 from hrchacha.exceptions.exception import HRChachaException
+from hrchacha.utils.general_utils import get_secret
 
 
 class LLM:
@@ -27,22 +28,9 @@ class LLM:
 
     def __init__(self):
         try:
-            # Try loading from streamlit secrets (if possible)
-            api_key = None
-            try:
-                import streamlit as st
-                if hasattr(st, "secrets"):
-                    api_key = st.secrets.get("GROQ_API_KEY")
-            except ImportError:
-                pass
-
-            # If not found, fallback to environment variable
+            api_key = get_secret("GROQ_API_KEY")
             if not api_key:
-                api_key = os.getenv("GROQ_API_KEY")
-
-            if not api_key:
-                raise ValueError("GROQ_API_KEY is not set in Streamlit secrets or environment variables.")
-
+                raise ValueError("GROQ_API_KEY must be defined as a Streamlit secret or environment variable.")
             self.client = Groq(api_key=api_key)
 
         except Exception as e:
