@@ -1,8 +1,9 @@
 import random
 import os
 from hrchacha.constants import HR_CHACHA_THINKING_LINES
+from hrchacha.logging.logger import logging
 from dotenv import load_dotenv
-load_dotenv()
+import streamlit as st
 
 def get_random_chacha_thinking_line() -> str:
     return random.choice(HR_CHACHA_THINKING_LINES)
@@ -10,13 +11,13 @@ def get_random_chacha_thinking_line() -> str:
 
 
 def get_secret(key):
-    # Try st.secrets if running inside Streamlit and the key exists
+    load_dotenv()
     try:
-        import streamlit as st
-        if hasattr(st, "secrets") and key in st.secrets:
-            return st.secrets[key]
-    except ImportError:
-        # Not running in Streamlit, skip
+        key = os.getenv(key)
+        if key:
+            logging.info(f"Found environmental secret key!")
+            return key
+    except ValueError:
         pass
-    # Fallback to environment variable
-    return os.getenv(key)
+    logging.info(f"No secret key found, using streamlit key")
+    return st.secrets.get(key)

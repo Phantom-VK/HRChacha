@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 USER_CHAT_INPUT_KEY = "ucik"
-
+DEFAULT_MODEL = "llama-3.3-70b-versatile"
 USER_ROLE = "user"
 BOT_ROLE = "system"
 PROJECT_ROOT = Path(__file__).parent.parent.parent

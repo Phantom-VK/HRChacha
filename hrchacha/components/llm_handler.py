@@ -5,6 +5,7 @@ from typing import Optional, Any
 import streamlit as st
 from groq import Groq
 
+from hrchacha.constants import DEFAULT_MODEL
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.utils.general_utils import get_secret
 
@@ -24,7 +25,7 @@ class LLM:
         text = llm.get_llama_response(stream=False)
     """
 
-    DEFAULT_MODEL = "llama-3.3-70b-versatile"
+
 
     def __init__(self):
         try:
@@ -49,7 +50,7 @@ class LLM:
 
         Uses `st.session_state.messages` as the messages payload (same structure).
         """
-        model = model or self.DEFAULT_MODEL
+        model = model or DEFAULT_MODEL
 
         try:
             messages = st.session_state.get("messages", [])
