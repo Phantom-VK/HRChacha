@@ -14,7 +14,7 @@ from hrchacha.logging.logger import logging
 class HRChacha:
 
     def __init__(self):
-        self.message_history = st.session_state.messages
+        self.message_history = st.session_state.chat_messages
 
         if "llm" not in st.session_state:
             st.session_state.llm = LLM()
@@ -53,7 +53,7 @@ class HRChacha:
             json_str = match.group(1)
 
             user_data = json.loads(json_str)
-            user_data["session_chat"] = st.session_state.messages
+            user_data["session_chat"] = st.session_state.chat_messages
 
             self.db.insert_user(user_data)
 
@@ -92,7 +92,7 @@ class HRChacha:
             st.write_stream(content_generator())
 
 
-            st.session_state.messages.append({
+            st.session_state.chat_messages.append({
                 "role": BOT_ROLE,
                 "content": full_response
             })

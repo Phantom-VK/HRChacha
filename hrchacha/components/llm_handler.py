@@ -5,7 +5,7 @@ from typing import Optional, Any
 import streamlit as st
 from groq import Groq
 
-from hrchacha.constants import DEFAULT_MODEL
+from hrchacha.constants import CHAT_MODEL
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.utils.general_utils import get_secret
 
@@ -50,10 +50,10 @@ class LLM:
 
         Uses `st.session_state.messages` as the messages payload (same structure).
         """
-        model = model or DEFAULT_MODEL
+        model = model or CHAT_MODEL
 
         try:
-            messages = st.session_state.get("messages", [])
+            messages = st.session_state.get("chat_messages", [])
             response = self.client.chat.completions.create(
                 messages=messages,
                 model=model,
