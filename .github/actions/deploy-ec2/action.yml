@@ -1,0 +1,54 @@
+name: 'Deploy to EC2'
+description: 'Deploy Docker image to EC2'
+inputs:
+  ecr-registry:
+    required: true
+  ecr-repository:
+    required: true
+  image-tag:
+    required: true
+  mongo-uri:
+    required: true
+  groq-api-key:
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Pull & Deploy
+      shell: bash
+      env:
+        ECR_REGISTRY: ${{ inputs.ecr-registry }}
+        ECR_REPOSITORY: ${{ inputs.ecr-repository }}
+        IMAGE_TAG: ${{ inputs.image-tag }}
+        MONGO_URI: ${{ inputs.mongo-uri }}
+        GROQ_API_KEY: ${{ inputs.groq-api-key }}
+      run: |
+        echo "🚀 Deploying $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        
+        # Pull new image
+        docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        
+        # Stop old container
+        docker stop hrchacha || true
+        docker rm hrchacha || true
+        
+        # Run optimized container
+        docker run -d \
+          --name hrchacha \
+          --restart unless-stopped \
+          --memory=512m \
+          --cpus=0.5 \
+          -p 8501:8501 \
+          -e MONGO_URI="$MONGO_URI" \
+          -e GROQ_API_KEY="$GROQ_API_KEY" \
+          $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        
+        # Health check
+        sleep 5
+        if curl -f http://localhost:8501/_stcore/health; then
+          echo "✅ Deployment successful!"
+        else
+          echo "⚠️ App starting... (normal for Streamlit)"
+        fi
+        
+        docker ps

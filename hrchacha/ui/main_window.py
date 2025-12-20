@@ -29,33 +29,26 @@ class MainWindowUI:
             self._show_processing_screen()
 
     def _show_processing_screen(self):
-        """Shows post-chat processing screen."""
-        st.set_page_config(page_title="Processing...", page_icon="⏳")
-
+        """Process conversation with Summary LLM and save to DB."""
         st.title("⏳ Processing Your Session")
-        st.markdown(
-            "<p style='color:#94a3b8;'>Please wait while we finalize insights.</p>",
-            unsafe_allow_html=True
-        )
+        st.markdown("**HRChacha is extracting your data...**")
 
         progress_bar = st.progress(0)
-        status_text = st.empty()
 
-        # Simulate processing (replace with actual processing logic)
-        import time
-        for i in range(100):
-            progress_bar.progress(i + 1)
-            status_text.text(f"Processing... {i + 1}%")
-            time.sleep(0.03)
+        # Process with Summary LLM
+        if "chat_bot" in st.session_state:
+            with st.spinner(text="Extracting candidate data..."):
+                st.session_state.chat_bot.process_conversation()  # Uses SUMMARY_MODEL
 
-        st.success("✅ Session processed successfully!")
-        st.balloons()
+            progress_bar.progress(100)
+            st.success("✅ Data processed and saved to database!")
 
-        if st.button("🏠 Back to Home", use_container_width=True):
-            # Reset chat state
-            if "chat_messages" in st.session_state:
-                del st.session_state.chat_messages
-            if "chat_bot" in st.session_state:
-                del st.session_state.chat_bot
-            st.session_state.current_screen = "home"
-            st.rerun()
+            if st.button("🏠 Back to Home", use_container_width=True):
+                # Reset chat state
+                for key in ["chat_messages", "chat_bot"]:
+                    if key in st.session_state:
+                        del st.session_state[key]
+                st.session_state.current_screen = "home"
+                st.rerun()
+        else:
+            st.warning("No chat data found.")

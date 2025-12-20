@@ -1,3 +1,4 @@
+import sys
 import streamlit as st
 from hrchacha.components.chatbot import HRChacha
 from hrchacha.constants import BOT_ROLE, USER_ROLE
@@ -63,32 +64,20 @@ class ChatUI:
             self._process_user_input(prompt)
 
     def _process_user_input(self, prompt: str):
-        """Processes user input and generates bot response."""
+        """Process chat with separate LLMs."""
         try:
-            prompt = prompt.strip()
-            if not prompt:
-                return
-
+            print("Processing user input...", prompt)
             # Add user message
             st.session_state.chat_messages.append({"role": USER_ROLE, "content": prompt})
 
             with st.chat_message(USER_ROLE):
                 st.markdown(prompt)
 
-            # Generate bot response
+            # Chat LLM response
             with st.chat_message(BOT_ROLE):
-                thinking_placeholder = st.empty()
-                # thinking_placeholder.markdown(get_random_chacha_thinking_line())
-                thinking_placeholder.markdown(
-                    "<span style='color:#22d3ee;'>HRChacha is thinking…</span>",
-                    unsafe_allow_html=True
-                )
-
-                response_stream = st.session_state.chat_bot.get_response_stream()
-                thinking_placeholder.empty()
-                st.session_state.chat_bot.stream_and_capture_response(response_stream)
+                st.session_state.chat_bot.stream_chat_response()  # Uses CHAT_MODEL
 
         except Exception as e:
-            err = HRChachaException(e)
+            err = HRChachaException(e, sys)
             logging.error(str(err))
             st.error("Sorry, something went wrong. Please try again.")

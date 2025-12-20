@@ -1,0 +1,34 @@
+name: 'Clean Docker'
+description: 'Aggressive Docker cleanup for tiny EC2'
+inputs:
+  dry-run:
+    description: 'Dry run mode'
+    required: false
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Execute Docker Cleanup
+      shell: bash
+      run: |
+        echo "🧹 Aggressive Docker cleanup..."
+        
+        # Kill everything Docker
+        docker stop $(docker ps -aq) 2>/dev/null || true
+        docker rm -f $(docker ps -aq) 2>/dev/null || true
+        docker rmi -f $(docker images -q) 2>/dev/null || true
+        
+        # Remove ALL volumes, networks, build cache
+        docker volume prune -f
+        docker volume rm $(docker volume ls -q) 2>/dev/null || true
+        docker network prune -f
+        
+        # Nuclear option - prune everything
+        docker system prune -a -f --volumes
+        
+        # Clear disk caches
+        sync && echo 3 > /proc/sys/vm/drop_caches || true
+        
+        # Verify space
+        df -h / | head -n 2
+        docker system df

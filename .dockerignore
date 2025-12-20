@@ -1,0 +1,13 @@
+.git
+.gitignore
+README.md
+.dockerignore
+.env
+*.pyc
+__pycache__
+.pytest_cache
+.coverage
+htmlcov
+.streamlit
+.nyc_output
+node_modules
