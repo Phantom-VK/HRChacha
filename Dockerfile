@@ -1,24 +1,33 @@
-# Multi-stage build for tiny image (60MB vs 1GB+)
 FROM python:3.11-slim AS builder
 
-WORKDIR /app
+WORKDIR /builder
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Install deps system-wide so binaries land in /usr/local/bin
+RUN pip install --no-cache-dir --only-binary=all -r requirements.txt
 
 FROM python:3.11-slim
 
-# Create non-root user
-RUN useradd -m -u 1000 appuser && \
-    mkdir -p /app && \
-    chown appuser:appuser /app
+# Install curl for healthcheck
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /root/.local /appuser/.local
+
+# Copy installed site-packages and console scripts
+COPY --from=builder /usr/local /usr/local
 COPY . .
 
-# Switch to non-root user
-USER appuser
+RUN mkdir -p /tmp/logs && chmod 777 /tmp/logs
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
+CMD ["streamlit", "run", "app.py", \
+     "--server.port=8501", \
+     "--server.address=0.0.0.0", \
+     "--server.headless=true", \
+     "--logger.level=error"]

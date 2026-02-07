@@ -25,14 +25,15 @@ runs:
       run: |
         echo "🚀 Deploying $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         
-        # Pull new image
+        # Pull image
         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         
-        # Stop old container
-        docker stop hrchacha || true
-        docker rm hrchacha || true
+        # Stop & remove ANY hrchacha containers
+        docker stop hrchacha || true && \
+        docker rm hrchacha || true && \
+        echo "🗑️ Old containers removed"
         
-        # Run optimized container
+        # Run with explicit container name
         docker run -d \
           --name hrchacha \
           --restart unless-stopped \
@@ -43,12 +44,14 @@ runs:
           -e GROQ_API_KEY="$GROQ_API_KEY" \
           $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         
-        # Health check
-        sleep 5
-        if curl -f http://localhost:8501/_stcore/health; then
-          echo "✅ Deployment successful!"
-        else
-          echo "⚠️ App starting... (normal for Streamlit)"
-        fi
+        # Wait & health check
+        sleep 10
+        echo "📊 Container status:"
+        docker ps -a --filter "name=hrchacha"
         
-        docker ps
+        # Test endpoint
+        if curl -f -m 5 http://localhost:8501/_stcore/health; then
+          echo "✅ Streamlit healthy!"
+        else
+          echo "⏳ Streamlit starting... (normal)"
+        fi
