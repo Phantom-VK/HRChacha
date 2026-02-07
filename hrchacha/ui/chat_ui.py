@@ -57,8 +57,17 @@ class ChatUI:
 
     def _chat_input(self):
         """Handles user input."""
-        if prompt := st.chat_input("Answer the current question or share required details..."):
-            self._process_user_input(prompt)
+        st.markdown('<div class=\"chat-bottom-row\">', unsafe_allow_html=True)
+        col_left, col_right = st.columns([5, 1])
+        with col_left:
+            if prompt := st.chat_input("Answer the current question or share required details..."):
+                self._process_user_input(prompt)
+        with col_right:
+            if st.button("End Chat", use_container_width=True, key="end_chat_btn_bottom"):
+                st.session_state.current_screen = "home"
+                st.session_state.clear()
+                st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     def _render_end_chat_button(self):
         """Render a fixed end chat button."""

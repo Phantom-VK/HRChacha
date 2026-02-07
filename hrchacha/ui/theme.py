@@ -117,21 +117,14 @@ def apply_dark_blue_theme():
             font-size: 0.85rem;
         }
 
-        /* Fixed End Chat button bottom-right */
-        button[aria-label="end_chat_btn_fixed"], button[kind][data-testid][aria-label="end_chat_btn_fixed"] {
-            position: fixed !important;
-            right: 18px;
-            bottom: 18px;
-            z-index: 50;
-        }
-        /* Ensure the chat input stays at bottom visually */
-        div[data-testid="stChatInput"] {
+        /* Sticky chat input row (wraps input + end chat) */
+        .chat-bottom-row {
             position: sticky;
             bottom: 0;
-            z-index: 20;
+            z-index: 30;
             background: rgba(2,6,23,0.92);
             backdrop-filter: blur(10px);
-            padding-top: 6px;
+            padding: 8px 0 4px 0;
             border-top: 1px solid #1e293b;
         }
 
