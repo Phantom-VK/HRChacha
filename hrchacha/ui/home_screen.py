@@ -17,7 +17,8 @@ class HomeScreen:
             <div style="text-align:center; margin-top:3rem;">
                 <h1 style="font-size:3rem;">HRChacha</h1>
                 <p style="color:#94a3b8; font-size:1.1rem;">
-                    AI Hiring Assistant by <b>TalentScout</b>
+                    AI Hiring Assistant by <b>TalentScout</b><br>
+                    Dual-LLM pipeline: Live interviewing + secure post-chat summarization
                 </p>
             </div>
             """,
@@ -40,7 +41,8 @@ class HomeScreen:
                     <ul style="color:#cbd5f5;">
                         <li>⚡ Intelligent candidate screening</li>
                         <li>🎯 Structured AI interviews</li>
-                        <li>📊 Data-driven hiring insights</li>
+                        <li>🧾 Automatic JSON summaries saved to MongoDB</li>
+                        <li>🔐 No data stored until you end the chat</li>
                     </ul>
                 </div>
                 """,
@@ -58,4 +60,3 @@ class HomeScreen:
             "© TalentScout · HRChacha AI</p>",
             unsafe_allow_html=True
         )
-

@@ -16,6 +16,8 @@ class MainWindowUI:
         """Initialize the main app state."""
         if "current_screen" not in st.session_state:
             st.session_state.current_screen = "home"
+        if "conversation_processed" not in st.session_state:
+            st.session_state.conversation_processed = False
 
     def run(self):
         """Main app runner - handles screen navigation."""
@@ -36,19 +38,23 @@ class MainWindowUI:
         progress_bar = st.progress(0)
 
         # Process with Summary LLM
-        if "chat_bot" in st.session_state:
+        if "chat_bot" in st.session_state and not st.session_state.get("conversation_processed", False):
             with st.spinner(text="Extracting candidate data..."):
                 st.session_state.chat_bot.process_conversation()  # Uses SUMMARY_MODEL
 
             progress_bar.progress(100)
             st.success("✅ Data processed and saved to database!")
+            st.session_state.conversation_processed = True
+        elif st.session_state.get("conversation_processed", False):
+            progress_bar.progress(100)
+            st.success("✅ Data already processed.")
 
-            if st.button("🏠 Back to Home", use_container_width=True):
-                # Reset chat state
-                for key in ["chat_messages", "chat_bot"]:
-                    if key in st.session_state:
-                        del st.session_state[key]
-                st.session_state.current_screen = "home"
-                st.rerun()
+        if st.button("🏠 Back to Home", use_container_width=True):
+            # Reset chat state
+            for key in ["chat_messages", "chat_bot", "conversation_processed"]:
+                if key in st.session_state:
+                    del st.session_state[key]
+            st.session_state.current_screen = "home"
+            st.rerun()
         else:
             st.warning("No chat data found.")

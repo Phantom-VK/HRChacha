@@ -76,6 +76,66 @@ def apply_dark_blue_theme():
             background: linear-gradient(90deg, #2563eb, #22d3ee);
         }
 
+        /* Pills / badges */
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            border: 1px solid #1e293b;
+            background: rgba(37, 99, 235, 0.12);
+            color: #cbd5f5;
+        }
+        .pill-live { background: rgba(34,211,238,0.18); color: #67e8f9; }
+        .pill-phase { background: rgba(37,99,235,0.16); }
+        .pill-llm { background: rgba(16,185,129,0.14); color: #34d399; }
+
+        /* Sidebar info card */
+        .info-card {
+            background: linear-gradient(135deg, #0b1224, #0a1120);
+            border: 1px solid #1e293b;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: #e5e7eb;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.9rem;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row code {
+            background: rgba(255,255,255,0.06);
+            padding: 2px 6px;
+            border-radius: 6px;
+            color: #cbd5f5;
+            font-size: 0.85rem;
+        }
+
+        /* Fixed End Chat button bottom-right */
+        button[aria-label="end_chat_btn_fixed"], button[kind][data-testid][aria-label="end_chat_btn_fixed"] {
+            position: fixed !important;
+            right: 18px;
+            bottom: 18px;
+            z-index: 50;
+        }
+        /* Ensure the chat input stays at bottom visually */
+        div[data-testid="stChatInput"] {
+            position: sticky;
+            bottom: 0;
+            z-index: 20;
+            background: rgba(2,6,23,0.92);
+            backdrop-filter: blur(10px);
+            padding-top: 6px;
+            border-top: 1px solid #1e293b;
+        }
+
+
         /* Subtle animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
