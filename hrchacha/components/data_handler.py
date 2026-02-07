@@ -49,7 +49,7 @@ class Database:
                 return self.update_user(email, user_data)
 
             self.collection.insert_one(user_data)
-            logging.info("User data inserted")
+            logging.info(f"User data inserted for {email}")
 
             return True
         except Exception as e:
