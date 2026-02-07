@@ -34,10 +34,18 @@ class LLM:
             raise ValueError("GROQ_API_KEY is required for chat and summary.")
         self.client = Groq(api_key=groq_api_key)
 
+    @staticmethod
+    def _trim_messages(messages: list, max_messages: int = 30) -> list:
+        """Keep one system prompt and the most recent user/assistant turns to save tokens."""
+        system_msgs = [m for m in messages if m["role"] == SYSTEM_ROLE]
+        non_system = [m for m in messages if m["role"] != SYSTEM_ROLE]
+        trimmed = non_system[-max_messages:]
+        return ([system_msgs[0]] if system_msgs else []) + trimmed
+
     def get_chat_response(self, stream: bool = True) -> Optional[Any]:
         """Chat LLM response; returns full text or a token generator if stream=True."""
         try:
-            messages = st.session_state.chat_messages
+            messages = self._trim_messages(st.session_state.chat_messages)
             response = self.client.chat.completions.create(
                 messages=messages,
                 model=CHAT_MODEL,
@@ -61,10 +69,10 @@ class LLM:
 
             response = self.client.chat.completions.create(
                 model=SUMMARY_MODEL,
-                messages=[
+                messages=self._trim_messages([
                     {"role": "system", "content": "Extract candidate data into JSON only."},
                     {"role": "user", "content": prompt},
-                ],
+                ], max_messages=2),
                 temperature=0.1,
                 max_tokens=2000,
                 stream=False,
