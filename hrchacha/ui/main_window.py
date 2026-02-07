@@ -51,7 +51,7 @@ class MainWindowUI:
 
         if st.button("🏠 Back to Home", use_container_width=True):
             # Reset chat state
-            for key in ["chat_messages", "chat_bot", "conversation_processed"]:
+            for key in ["chat_messages", "chat_bot", "conversation_processed", "last_processed_email"]:
                 if key in st.session_state:
                     del st.session_state[key]
             st.session_state.current_screen = "home"

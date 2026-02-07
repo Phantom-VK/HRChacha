@@ -105,6 +105,7 @@ class HRChacha:
                 return
 
             # Save to MongoDB
+            st.session_state.last_processed_email = candidate_data.get("email")
             candidate_data["session_chat"] = st.session_state.chat_messages
             self.db.insert_user(candidate_data)
 
