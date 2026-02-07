@@ -14,9 +14,10 @@ if not BASE_LOG_DIR:
     else:
         BASE_LOG_DIR = "/tmp/logs"
 
-timestamp_dir = datetime.now().strftime("%Y%m%d_%H%M")
+# Reuse a single directory per day to avoid log folder spam on reruns
+timestamp_dir = datetime.now().strftime("%Y%m%d")
 LOG_DIR = Path(BASE_LOG_DIR) / timestamp_dir
-LOG_FILE = f"hrchacha_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+LOG_FILE = f"hrchacha_{datetime.now().strftime('%H%M%S')}.log"
 
 
 def _build_handlers():
