@@ -22,6 +22,13 @@ class HRChacha:
         self.llm = st.session_state.llm
         self.db = st.session_state.database
 
+    def _close_resources(self):
+        try:
+            if hasattr(self.db, "client"):
+                self.db.client.close()
+        except Exception:
+            pass
+
     def get_response_stream(self):
         """Get chat LLM streaming response."""
         return self.llm.get_chat_response(stream=True)
@@ -108,3 +115,5 @@ class HRChacha:
             err = HRChachaException(e, sys)
             logging.error(str(err))
             st.error("Processing failed.")
+        finally:
+            self._close_resources()
