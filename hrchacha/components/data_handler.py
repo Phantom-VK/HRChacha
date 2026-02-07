@@ -38,11 +38,15 @@ class Database:
         try:
             email = user_data.get("email")
 
-            #Check if user already exists and update it.
-            existing = self.collection.find_one({"email":email })
+            # Enforce unique key: prefer email, else generate session-scoped id
+            if not email:
+                import uuid
+                email = f"session-{uuid.uuid4()}@placeholder.local"
+                user_data["email"] = email
+
+            existing = self.collection.find_one({"email": email})
             if existing:
                 return self.update_user(email, user_data)
-
 
             self.collection.insert_one(user_data)
             logging.info("User data inserted")
