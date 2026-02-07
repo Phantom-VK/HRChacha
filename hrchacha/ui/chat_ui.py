@@ -17,7 +17,7 @@ class ChatUI:
         """Initializes session state for chat."""
         if "chat_messages" not in st.session_state:
             st.session_state.chat_messages = [
-                {"role": SYSTEM_ROLE, "content": SYSTEM_PROMPT + "\n\n" + CHATBOT_REFERENCE_QUESTIONS},
+                {"role": SYSTEM_ROLE, "content": SYSTEM_PROMPT},
             ]
         # reset processing flag on new chat load
         st.session_state.conversation_processed = False
