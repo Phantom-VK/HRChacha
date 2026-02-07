@@ -1,8 +1,5 @@
-import os
 import sys
 
-import streamlit as st
-from dotenv import load_dotenv
 from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -10,17 +7,16 @@ from pymongo.server_api import ServerApi
 from hrchacha.constants import DB_NAME, COLLECTION_NAME
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
+from hrchacha.utils.general_utils import get_secret
 
-load_dotenv()
 
 class Database:
     def __init__(self):
         try:
-            # Get URI from .env file.
-            uri = st.secrets["MONGO_URI"]
+            uri = get_secret("MONGO_URI")
 
             if not uri:
-                raise ValueError("MONGO_URI not set in environment variables.")
+                raise ValueError("MONGO_URI not set in environment variables or secrets.")
 
             self.client = MongoClient(uri, server_api=ServerApi('1'))
 
@@ -34,6 +30,8 @@ class Database:
         except Exception as e:
             err = HRChachaException(e, sys)
             logging.error(str(err))
+            # Fail fast so downstream code doesn't operate with invalid state
+            raise
 
     def insert_user(self, user_data: dict) -> bool:
         """Insert a new candidate record. Returns True if successful."""
