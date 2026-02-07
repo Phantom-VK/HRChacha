@@ -5,7 +5,8 @@ USER_CHAT_INPUT_KEY = "ucik"
 CHAT_MODEL = "llama-3.3-70b-versatile"
 SUMMARY_MODEL = "openai/gpt-oss-20b"
 USER_ROLE = "user"
-BOT_ROLE = "system"
+BOT_ROLE = "assistant"
+SYSTEM_ROLE = "system"
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 USER_DATA_PATTERN = r'USER_DATA\s*```json\s*([\s\S]*?)\s*```'
