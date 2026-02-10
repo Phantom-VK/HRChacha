@@ -1,0 +1,12 @@
+# Bytecode / caches
+__pycache__/
+*.py[cod]
+
+# Environments
+.env
+.venv/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/

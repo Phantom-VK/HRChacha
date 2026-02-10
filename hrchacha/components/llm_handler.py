@@ -6,7 +6,7 @@ import streamlit as st
 from groq import Groq
 from pydantic import BaseModel, EmailStr, Field
 
-from hrchacha.constants import CHAT_MODEL, SUMMARY_MODEL
+from hrchacha.constants import CHAT_MODEL, SUMMARY_MODEL, SYSTEM_ROLE
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.utils.general_utils import get_secret
 

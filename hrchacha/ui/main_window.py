@@ -49,6 +49,8 @@ class MainWindowUI:
             progress_bar.progress(100)
             st.success("✅ Data already processed.")
 
+        has_chat_data = "chat_bot" in st.session_state or st.session_state.get("conversation_processed", False)
+
         if st.button("🏠 Back to Home", use_container_width=True):
             # Reset chat state
             for key in ["chat_messages", "chat_bot", "conversation_processed", "last_processed_email"]:
@@ -56,5 +58,5 @@ class MainWindowUI:
                     del st.session_state[key]
             st.session_state.current_screen = "home"
             st.rerun()
-        else:
+        elif not has_chat_data:
             st.warning("No chat data found.")
