@@ -14,6 +14,7 @@ def apply_dark_blue_theme():
             );
             color: #e5e7eb;
             font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont;
+            padding-bottom: 120px; /* leave room for fixed chat bar */
         }
 
         /* ===== Remove Streamlit Chrome ===== */
@@ -119,15 +120,36 @@ def apply_dark_blue_theme():
 
         /* Sticky chat input row (wraps input + end chat) */
         .chat-bottom-row {
-            position: sticky;
+            position: fixed;
+            left: 0;
+            right: 0;
             bottom: 0;
-            z-index: 30;
-            background: rgba(2,6,23,0.92);
-            backdrop-filter: blur(10px);
-            padding: 8px 0 4px 0;
+            z-index: 95;
+            background: rgba(2,6,23,0.94);
+            backdrop-filter: blur(12px);
+            padding: 10px 16px 12px 16px;
             border-top: 1px solid #1e293b;
+            box-shadow: 0 -6px 30px rgba(0,0,0,0.35);
         }
-
+        .chat-bottom-row .stChatInput {
+            width: 100%;
+        }
+        /* Force Streamlit chat input to sit above everything */
+        .stChatInput {
+            position: static !important; /* use container positioning */
+            margin: 0;
+        }
+        /* Floating End Chat button */
+        .end-chat-wrapper {
+            position: fixed;
+            right: 20px;
+            bottom: 82px;
+            z-index: 96;
+        }
+        .end-chat-wrapper .stButton > button {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            box-shadow: 0 8px 24px rgba(185, 28, 28, 0.35);
+        }
 
         /* Subtle animation */
         @keyframes fadeIn {

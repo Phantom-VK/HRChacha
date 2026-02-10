@@ -40,8 +40,10 @@ class ChatUI:
         self._render_sidebar()
 
         self._display_chat_messages()
+        # spacer so fixed input bar doesn't cover last messages
+        st.markdown("<div style='height:110px;'></div>", unsafe_allow_html=True)
         self._chat_input()
-        self._render_end_chat_button()
+        self._render_end_chat_fab()
 
     def _display_chat_messages(self):
         """Displays all chat messages."""
@@ -58,23 +60,17 @@ class ChatUI:
     def _chat_input(self):
         """Handles user input."""
         st.markdown('<div class=\"chat-bottom-row\">', unsafe_allow_html=True)
-        col_left, col_right = st.columns([5, 1])
-        with col_left:
-            if prompt := st.chat_input("Answer the current question or share required details..."):
-                self._process_user_input(prompt)
-        with col_right:
-            if st.button("End Chat", use_container_width=True, key="end_chat_btn_bottom"):
-                st.session_state.current_screen = "home"
-                st.session_state.clear()
-                st.rerun()
+        if prompt := st.chat_input("Answer the current question or share required details..."):
+            self._process_user_input(prompt)
         st.markdown('</div>', unsafe_allow_html=True)
 
-    def _render_end_chat_button(self):
-        """Render a fixed end chat button."""
-        if st.button("End Chat", key="end_chat_btn_fixed"):
-            # Full reload to reset state
+    def _render_end_chat_fab(self):
+        """Render a floating sticky end chat button."""
+        st.markdown('<div class="end-chat-wrapper">', unsafe_allow_html=True)
+        if st.button("End Chat", key="end_chat_fab"):
             st.session_state.clear()
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     def _process_user_input(self, prompt: str):
         """Process chat with separate LLMs."""
