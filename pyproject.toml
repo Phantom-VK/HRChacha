@@ -2,7 +2,7 @@
 name = "hrchacha"
 version = "0.1.0"
 description = "AI-powered hiring assistant chatbot built with Streamlit and Groq"
-requires-python = ">=3.11"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "dnspython>=2.8.0,<3",
     "groq>=1.1.2,<2",
