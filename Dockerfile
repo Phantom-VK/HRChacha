@@ -1,12 +1,16 @@
-FROM python:3.11-slim AS builder
+FROM python:3.12-slim AS builder
 
-WORKDIR /builder
-COPY requirements.txt .
+COPY --from=ghcr.io/astral-sh/uv:0.8.13 /uv /uvx /bin/
 
-# Install deps system-wide so binaries land in /usr/local/bin
-RUN pip install --no-cache-dir --only-binary=all -r requirements.txt
+WORKDIR /app
 
-FROM python:3.11-slim
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --no-install-project
+
+FROM python:3.12-slim
 
 # Install curl for healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -15,9 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy installed site-packages and console scripts
-COPY --from=builder /usr/local /usr/local
+COPY --from=builder /app/.venv /app/.venv
 COPY . .
+
+ENV PATH="/app/.venv/bin:$PATH"
 
 RUN mkdir -p /tmp/logs && chmod 777 /tmp/logs
 

@@ -2,7 +2,7 @@
 
 &#x20;  &#x20;
 
-> **HR Chacha** is an AI-powered hiring assistant chatbot built using **Streamlit**, **LLaMA 3.3 70B**, **MongoDB** and deployed with **AWS ECR + EC2**. It simulates an intelligent recruiter that collects candidate details, asks technical questions based on their skills, and formats their data into a clean JSON format for HR/admins to evaluate.
+> **HR Chacha** is an AI-powered hiring assistant chatbot built using **Streamlit**, **Groq-hosted LLMs**, **MongoDB** and deployed with **AWS ECR + EC2**. It simulates an intelligent recruiter that collects candidate details, asks technical questions based on their skills, and formats their data into a clean JSON format for HR/admins to evaluate.
 
 AWS Deployment: Deployment has been paused.
 
@@ -36,28 +36,44 @@ git clone https://github.com/Phantom-VK/HRChacha.git
 cd HRChacha
 ```
 
-### 2. Setup environment
+### 2. Install uv
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### 3. Environment Variables
+### 3. Use Python 3.12
+
+```bash
+uv python install 3.12
+```
+
+### 4. Setup environment
+
+```bash
+uv sync --locked
+```
+
+This creates a project-managed virtual environment at `.venv` from `pyproject.toml` and `uv.lock`.
+
+### 5. Environment Variables
 
 Create a `.env` file:
 
 ```env
 MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/
-TOGETHER_API_KEY=your_together_api_key_here
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
-### 4. Run the app
+### 6. Run the app
 
 ```bash
-streamlit run app.py
+uv run streamlit run app.py
 ```
+
+### 7. Docker build
+
+The Docker image now installs dependencies from `uv.lock`, so local uv and container environments resolve from the same lockfile.
 
 ---
 
@@ -76,7 +92,8 @@ streamlit run app.py
 
 * **Frontend**: Streamlit
 * **Backend**: Python
-* **LLM API**: Together AI (LLaMA 3.3 70B Instruct Turbo)
+* **Python version**: 3.12
+* **LLM API**: Groq
 * **Database**: MongoDB Atlas
 * **Deploymet**: Github Workflow, Runners, Docker,  AWS ECR, AWS EC2
 * **Prompt Management**: Custom, static system prompt with extract logic
@@ -86,7 +103,7 @@ streamlit run app.py
 * `streamlit`
 * `pymongo`
 * `python-dotenv`
-* `together` (for API access to LLaMA)
+* `groq`
 
 ### 🧠 LLM Architecture
 
@@ -116,6 +133,7 @@ Prompting strategy follows best practices:
 * **Docker**: for containerized development and deployment
 * **GitHub Actions**: to automate test and deployment workflows
 * **AWS EC2 / ECR**: for cloud hosting + storing image
+* **Environment management**: `uv`
 
 ```mermaid
 graph TD;
