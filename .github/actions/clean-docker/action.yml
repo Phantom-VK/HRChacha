@@ -12,23 +12,23 @@ runs:
       shell: bash
       run: |
         echo "🧹 Aggressive Docker cleanup..."
-        
+
         # Kill everything Docker
-        docker stop $(docker ps -aq) 2>/dev/null || true
-        docker rm -f $(docker ps -aq) 2>/dev/null || true
-        docker rmi -f $(docker images -q) 2>/dev/null || true
-        
+        sudo docker stop $(sudo docker ps -aq) 2>/dev/null || true
+        sudo docker rm -f $(sudo docker ps -aq) 2>/dev/null || true
+        sudo docker rmi -f $(sudo docker images -q) 2>/dev/null || true
+
         # Remove ALL volumes, networks, build cache
-        docker volume prune -f
-        docker volume rm $(docker volume ls -q) 2>/dev/null || true
-        docker network prune -f
-        
-        # Nuclear option - prune everything
-        docker system prune -a -f --volumes
-        
+        sudo docker volume prune -f
+        sudo docker volume rm $(sudo docker volume ls -q) 2>/dev/null || true
+        sudo docker network prune -f
+
+        # Nuclear option
+        sudo docker system prune -a -f --volumes
+
         # Clear disk caches
-        sync && echo 3 > /proc/sys/vm/drop_caches || true
-        
+        sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches' || true
+
         # Verify space
         df -h / | head -n 2
-        docker system df
+        sudo docker system df
