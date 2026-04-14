@@ -8,6 +8,7 @@ __pycache__/
 
 # Editors / OS
 .DS_Store
+PR.md
 .codex
 .idea/
 .vscode/

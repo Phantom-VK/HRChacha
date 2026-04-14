@@ -2,15 +2,6 @@ import streamlit as st
 
 
 class HomeScreen:
-    def __init__(self):
-        self.title = "HRchacha - AI Hiring Assistant by TalentScout"
-        st.set_page_config(
-            page_title=self.title,
-            page_icon="🤖",
-            layout="wide",
-            initial_sidebar_state="collapsed"
-        )
-
     def render(self):
         st.markdown(
             """
@@ -22,7 +13,7 @@ class HomeScreen:
                 </p>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -46,7 +37,7 @@ class HomeScreen:
                     </ul>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
             st.markdown("<br>", unsafe_allow_html=True)
@@ -58,5 +49,5 @@ class HomeScreen:
         st.markdown(
             "<p style='text-align:center; color:#64748b; margin-top:3rem;'>"
             "© TalentScout · HRChacha AI</p>",
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )

@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def apply_dark_blue_theme():
     st.markdown(
         """
@@ -14,7 +15,6 @@ def apply_dark_blue_theme():
             );
             color: #e5e7eb;
             font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont;
-            padding-bottom: 120px; /* leave room for fixed chat bar */
         }
 
         /* ===== Remove Streamlit Chrome ===== */
@@ -22,7 +22,7 @@ def apply_dark_blue_theme():
             visibility: hidden;
         }
 
-        /* ===== Titles ===== */
+        /* ===== Headings ===== */
         h1, h2, h3 {
             color: #e5e7eb;
             letter-spacing: -0.5px;
@@ -38,62 +38,57 @@ def apply_dark_blue_theme():
             font-weight: 600;
             transition: all 0.2s ease-in-out;
         }
-
         .stButton > button:hover {
             transform: translateY(-1px);
             box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
         }
 
-        /* ===== Chat Container ===== */
+        /* ===== Chat Messages ===== */
         .stChatMessage {
             border-radius: 14px;
             padding: 0.75rem 1rem;
             margin-bottom: 0.6rem;
             animation: fadeIn 0.25s ease-in;
         }
-
-        /* User Message */
         .stChatMessage[data-testid="stChatMessage"][aria-label="user"] {
             background: linear-gradient(135deg, #1e293b, #020617);
             border-left: 3px solid #3b82f6;
         }
-
-        /* Bot Message */
         .stChatMessage[data-testid="stChatMessage"][aria-label="assistant"] {
             background: linear-gradient(135deg, #020617, #020617);
             border-left: 3px solid #22d3ee;
         }
 
-        /* Chat Input */
+        /* ===== Chat Input ===== */
         .stChatInput textarea {
-            background-color: #020617;
+            background-color: #0b1224;
             color: #e5e7eb;
             border-radius: 12px;
             border: 1px solid #1e293b;
         }
 
-        /* Progress bar */
+        /* ===== Progress Bar ===== */
         .stProgress > div > div {
             background: linear-gradient(90deg, #2563eb, #22d3ee);
         }
 
-        /* Pills / badges */
+        /* ===== Pills / Badges ===== */
         .pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 12px;
+            padding: 4px 12px;
             border-radius: 999px;
             font-size: 0.82rem;
             border: 1px solid #1e293b;
             background: rgba(37, 99, 235, 0.12);
             color: #cbd5f5;
         }
-        .pill-live { background: rgba(34,211,238,0.18); color: #67e8f9; }
-        .pill-phase { background: rgba(37,99,235,0.16); }
-        .pill-llm { background: rgba(16,185,129,0.14); color: #34d399; }
+        .pill-live  { background: rgba(34, 211, 238, 0.18); color: #67e8f9; }
+        .pill-phase { background: rgba(37, 99, 235, 0.16); }
+        .pill-llm   { background: rgba(16, 185, 129, 0.14); color: #34d399; }
 
-        /* Sidebar info card */
+        /* ===== Sidebar Info Card ===== */
         .info-card {
             background: linear-gradient(135deg, #0b1224, #0a1120);
             border: 1px solid #1e293b;
@@ -106,40 +101,19 @@ def apply_dark_blue_theme():
             justify-content: space-between;
             gap: 8px;
             padding: 6px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             font-size: 0.9rem;
         }
         .info-row:last-child { border-bottom: none; }
         .info-row code {
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
             padding: 2px 6px;
             border-radius: 6px;
             color: #cbd5f5;
             font-size: 0.85rem;
         }
 
-        /* Sticky chat input row (wraps input + end chat) */
-        .chat-bottom-row {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 95;
-            background: rgba(2,6,23,0.94);
-            backdrop-filter: blur(12px);
-            padding: 10px 16px 12px 16px;
-            border-top: 1px solid #1e293b;
-            box-shadow: 0 -6px 30px rgba(0,0,0,0.35);
-        }
-        .chat-bottom-row .stChatInput {
-            width: 100%;
-        }
-        /* Force Streamlit chat input to sit above everything */
-        .stChatInput {
-            position: static !important; /* use container positioning */
-            margin: 0;
-        }
-        /* Floating End Chat button */
+        /* ===== Floating End Chat Button ===== */
         .end-chat-wrapper {
             position: fixed;
             right: 20px;
@@ -151,12 +125,12 @@ def apply_dark_blue_theme():
             box-shadow: 0 8px 24px rgba(185, 28, 28, 0.35);
         }
 
-        /* Subtle animation */
+        /* ===== Fade-in Animation ===== */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+            to   { opacity: 1; transform: translateY(0); }
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )

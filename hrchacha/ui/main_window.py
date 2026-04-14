@@ -7,10 +7,17 @@ from hrchacha.ui.theme import apply_dark_blue_theme
 
 class MainWindowUI:
     def __init__(self):
+        # set_page_config MUST be the very first Streamlit call — before any st.markdown or st.write
+        st.set_page_config(
+            page_title="HRChacha - AI Hiring Assistant by TalentScout",
+            page_icon="🤖",
+            layout="wide",
+            initial_sidebar_state="collapsed",
+        )
         apply_dark_blue_theme()
+        self._initialize_app_state()
         self.home_screen = HomeScreen()
         self.chat_ui = ChatUI("HRChacha - TalentScout")
-        self._initialize_app_state()
 
     def _initialize_app_state(self):
         """Initialize the main app state."""
@@ -20,14 +27,14 @@ class MainWindowUI:
             st.session_state.conversation_processed = False
 
     def run(self):
-        """Main app runner - handles screen navigation."""
-        if st.session_state.current_screen == "home":
+        """Main app runner — handles screen navigation."""
+        screen = st.session_state.current_screen
+
+        if screen == "home":
             self.home_screen.render()
-
-        elif st.session_state.current_screen == "chat":
+        elif screen == "chat":
             self.chat_ui.render()
-
-        elif st.session_state.current_screen == "processing":
+        elif screen == "processing":
             self._show_processing_screen()
 
     def _show_processing_screen(self):
@@ -37,26 +44,26 @@ class MainWindowUI:
 
         progress_bar = st.progress(0)
 
-        # Process with Summary LLM
-        if "chat_bot" in st.session_state and not st.session_state.get("conversation_processed", False):
-            with st.spinner(text="Extracting candidate data..."):
-                st.session_state.chat_bot.process_conversation()  # Uses SUMMARY_MODEL
+        has_chat_bot = "chat_bot" in st.session_state
 
+        if has_chat_bot and not st.session_state.get("conversation_processed", False):
+            with st.spinner("Extracting candidate data..."):
+                st.session_state.chat_bot.process_conversation()  # Uses SUMMARY_MODEL
             progress_bar.progress(100)
             st.success("✅ Data processed and saved to database!")
             st.session_state.conversation_processed = True
+
         elif st.session_state.get("conversation_processed", False):
             progress_bar.progress(100)
             st.success("✅ Data already processed.")
 
-        has_chat_data = "chat_bot" in st.session_state or st.session_state.get("conversation_processed", False)
+        else:
+            # No chat data found — give user a way out
+            st.warning("⚠️ No chat data found. Nothing to process.")
 
+        # Always show the Back to Home button so the user is never stuck
         if st.button("🏠 Back to Home", use_container_width=True):
-            # Reset chat state
-            for key in ["chat_messages", "chat_bot", "conversation_processed", "last_processed_email"]:
-                if key in st.session_state:
-                    del st.session_state[key]
+            for key in ["chat_messages", "chat_bot", "conversation_processed"]:
+                st.session_state.pop(key, None)
             st.session_state.current_screen = "home"
             st.rerun()
-        elif not has_chat_data:
-            st.warning("No chat data found.")
