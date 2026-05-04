@@ -13,7 +13,7 @@ def get_random_chacha_thinking_line() -> str:
 
 
 def get_secret(key: str):
-    """Retrieve a secret from env first, then Streamlit secrets without mutating the key."""
+    """Retrieve a secret from env first."""
     load_dotenv()
 
     env_val = os.getenv(key)
@@ -21,10 +21,5 @@ def get_secret(key: str):
         logging.info(f"Using environment secret for {key}")
         return env_val
 
-    streamlit_val = st.secrets.get(key)
-    if streamlit_val:
-        logging.info(f"Using Streamlit secret for {key}")
-        return streamlit_val
-
-    logging.warning(f"Secret {key} not found in environment or Streamlit")
+    logging.warning(f"Secret {key} not found in environment")
     return None

@@ -41,7 +41,7 @@ runs:
           --cpus=0.5 \
           -p 8501:8501 \
           -e MONGO_URI="$MONGO_URI" \
-          -e GROQ_API_KEY="$GROQ_API_KEY" \
+          -e DEEPSEEK_API_KEY="$DEEPSEEK_API_KEY" \
           $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         
         # Wait & health check
