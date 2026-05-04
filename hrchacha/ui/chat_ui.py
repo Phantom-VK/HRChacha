@@ -4,7 +4,7 @@ from hrchacha.components.chatbot import HRChacha
 from hrchacha.constants import BOT_ROLE, USER_ROLE, SYSTEM_ROLE, CHAT_MODEL, SUMMARY_MODEL
 from hrchacha.exceptions.exception import HRChachaException
 from hrchacha.logging.logger import logging
-from hrchacha.prompts import SYSTEM_PROMPT
+from hrchacha.prompts import INITIAL_GREETING_MESSAGE, SYSTEM_PROMPT
 
 
 class ChatUI:
@@ -17,6 +17,7 @@ class ChatUI:
         if "chat_messages" not in st.session_state:
             st.session_state.chat_messages = [
                 {"role": SYSTEM_ROLE, "content": SYSTEM_PROMPT},
+                {"role": BOT_ROLE, "content": INITIAL_GREETING_MESSAGE},
             ]
 
         # Only reset processing flag when starting fresh (not on every rerun)
@@ -64,12 +65,26 @@ class ChatUI:
     def _render_end_chat_button(self):
         """
         Floating End Chat button.
-        Navigates to the processing screen — does NOT wipe state here,
-        because the processing screen needs chat_messages and chat_bot.
+        Ends the current interview without processing or saving partial data.
         """
         st.markdown('<div class="end-chat-wrapper">', unsafe_allow_html=True)
         if st.button("End Chat", key="end_chat_fab"):
-            st.session_state.current_screen = "processing"
+            database = st.session_state.get("database")
+            if database and hasattr(database, "client"):
+                database.client.close()
+
+            for key in [
+                "chat_messages",
+                "chat_bot",
+                "conversation_processed",
+                "processing_status",
+                "last_processed_email",
+                "llm",
+                "database",
+            ]:
+                st.session_state.pop(key, None)
+
+            st.session_state.current_screen = "home"
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -81,10 +96,8 @@ class ChatUI:
             with st.chat_message(USER_ROLE, avatar="user"):
                 st.markdown(prompt)
 
-            # Get and display bot response
             with st.chat_message(BOT_ROLE, avatar="assistant"):
-                with st.spinner("Thinking..."):
-                    st.session_state.chat_bot.stream_chat_response()  # Uses CHAT_MODEL
+                st.session_state.chat_bot.stream_chat_response()  # Uses CHAT_MODEL
 
         except Exception as e:
             err = HRChachaException(e, sys)
@@ -99,8 +112,8 @@ class ChatUI:
                 <div class="info-card">
                     <div class="info-row"><span>🗣️ Chat Model</span><code>{CHAT_MODEL}</code></div>
                     <div class="info-row"><span>🧾 Summary Model</span><code>{SUMMARY_MODEL}</code></div>
-                    <div class="info-row"><span>🔐 Data</span><span>Stored in MongoDB after you end chat.</span></div>
-                    <div class="info-row"><span>⚠️ Privacy</span><span>No data shared until you click End Chat.</span></div>
+                    <div class="info-row"><span>🔐 Data</span><span>Stored in MongoDB only after a complete interview.</span></div>
+                    <div class="info-row"><span>⚠️ Privacy</span><span>End Chat discards the current session.</span></div>
                 </div>
                 """,
                 unsafe_allow_html=True,

@@ -33,7 +33,7 @@ class HomeScreen:
                         <li>⚡ Intelligent candidate screening</li>
                         <li>🎯 Structured AI interviews</li>
                         <li>🧾 Automatic JSON summaries saved to MongoDB</li>
-                        <li>🔐 No data stored until you end the chat</li>
+                        <li>🔐 Data stored only after a complete interview</li>
                     </ul>
                 </div>
                 """,

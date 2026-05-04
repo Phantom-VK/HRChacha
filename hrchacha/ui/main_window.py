@@ -17,7 +17,6 @@ class MainWindowUI:
         apply_dark_blue_theme()
         self._initialize_app_state()
         self.home_screen = HomeScreen()
-        self.chat_ui = ChatUI("HRChacha - TalentScout")
 
     def _initialize_app_state(self):
         """Initialize the main app state."""
@@ -25,6 +24,8 @@ class MainWindowUI:
             st.session_state.current_screen = "home"
         if "conversation_processed" not in st.session_state:
             st.session_state.conversation_processed = False
+        if "processing_status" not in st.session_state:
+            st.session_state.processing_status = "not_started"
 
     def run(self):
         """Main app runner — handles screen navigation."""
@@ -33,37 +34,69 @@ class MainWindowUI:
         if screen == "home":
             self.home_screen.render()
         elif screen == "chat":
-            self.chat_ui.render()
+            ChatUI("HRChacha - TalentScout").render()
         elif screen == "processing":
             self._show_processing_screen()
+
+    @staticmethod
+    def _reset_session_to_home():
+        database = st.session_state.get("database")
+        if database and hasattr(database, "client"):
+            database.client.close()
+
+        for key in [
+            "chat_messages",
+            "chat_bot",
+            "conversation_processed",
+            "processing_status",
+            "last_processed_email",
+            "llm",
+            "database",
+        ]:
+            st.session_state.pop(key, None)
+        st.session_state.current_screen = "home"
+        st.rerun()
 
     def _show_processing_screen(self):
         """Process conversation with Summary LLM and save to DB."""
         st.title("⏳ Processing Your Session")
         st.markdown("**HRChacha is extracting your data...**")
 
+        if st.button("🏠 Back to Home", use_container_width=True):
+            self._reset_session_to_home()
+
         progress_bar = st.progress(0)
 
         has_chat_bot = "chat_bot" in st.session_state
+        processing_status = st.session_state.get("processing_status", "not_started")
 
-        if has_chat_bot and not st.session_state.get("conversation_processed", False):
+        if has_chat_bot and processing_status == "not_started":
             with st.spinner("Extracting candidate data..."):
-                st.session_state.chat_bot.process_conversation()  # Uses SUMMARY_MODEL
-            progress_bar.progress(100)
-            st.success("✅ Data processed and saved to database!")
-            st.session_state.conversation_processed = True
+                st.session_state.processing_status = "processing"
+                processed = st.session_state.chat_bot.process_conversation()  # Uses SUMMARY_MODEL
+            if processed:
+                progress_bar.progress(100)
+                st.session_state.conversation_processed = True
+                st.session_state.processing_status = "succeeded"
+            else:
+                progress_bar.progress(0)
+                st.session_state.processing_status = "failed"
 
-        elif st.session_state.get("conversation_processed", False):
+        elif processing_status == "succeeded" or st.session_state.get("conversation_processed", False):
             progress_bar.progress(100)
             st.success("✅ Data already processed.")
+
+        elif processing_status == "failed":
+            progress_bar.progress(0)
+            st.error("Processing failed. Check logs for the extraction or MongoDB upload failure.")
+            if st.button("Retry Processing", use_container_width=True):
+                st.session_state.processing_status = "not_started"
+                st.session_state.conversation_processed = False
+                st.rerun()
+
+        elif processing_status == "processing":
+            st.info("Processing is already in progress. Please wait.")
 
         else:
             # No chat data found — give user a way out
             st.warning("⚠️ No chat data found. Nothing to process.")
-
-        # Always show the Back to Home button so the user is never stuck
-        if st.button("🏠 Back to Home", use_container_width=True):
-            for key in ["chat_messages", "chat_bot", "conversation_processed"]:
-                st.session_state.pop(key, None)
-            st.session_state.current_screen = "home"
-            st.rerun()
