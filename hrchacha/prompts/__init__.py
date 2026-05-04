@@ -1,121 +1,3 @@
-CHATBOT_REFERENCE_QUESTIONS = """
-REFERENCE QUESTIONS TO ASK TO CANDIDATE for # 🧪 Phase 2: Technical Assessment
-You can ask questions like following based on user's tech stack.
-# Easy Level Questions (Short Answers)
-
-## Programming Basics
-1. What's the difference between == and === in JavaScript?
-2. How do you declare a variable in Python?
-3. What does 'console.log()' do in JavaScript?
-4. How do you print something in Java?
-5. What's the main function in C++ used for?
-
-## Web Development
-1. What does HTML stand for?
-2. How do you link a CSS file to HTML?
-3. What's the basic structure of an HTML document?
-4. How do you make text bold in HTML?
-5. What does 'href' stand for in HTML links?
-
-## Data Structures
-1. What's the difference between an array and a list?
-2. How do you add an item to a Python list?
-3. What's the first index in most programming languages?
-4. What data structure uses LIFO (Last In First Out)?
-5. Name three common data structures.
-
-# Medium Level Questions (2-3 sentence answers)
-
-## Python
-1. Explain the difference between lists and tuples in Python.
-2. How would you handle exceptions in Python? Show basic syntax.
-3. What are Python virtual environments and why use them?
-4. Explain the difference between 'deep copy' and 'shallow copy'.
-5. How do you read a file in Python?
-
-## JavaScript
-1. What are arrow functions and how do they differ from regular functions?
-2. Explain 'let' vs 'var' vs 'const' in JavaScript.
-3. What is the DOM in web development?
-4. How would you fetch data from an API in JavaScript?
-5. What are promises in JavaScript?
-
-## Java
-1. What is the difference between an interface and abstract class?
-2. Explain the 'static' keyword in Java.
-3. How does garbage collection work in Java?
-4. What are Java streams used for?
-5. Explain inheritance with a simple example.
-
-## SQL
-1. What's the difference between WHERE and HAVING clauses?
-2. How would you find duplicate records in a table?
-3. Explain LEFT JOIN vs INNER JOIN.
-4. What is a primary key?
-5. How do you add a new column to an existing table?
-
-## Web Concepts
-1. What's the difference between GET and POST requests?
-2. Explain cookies vs localStorage.
-3. What is CORS and why is it important?
-4. How does HTTPS provide security?
-5. What are media queries in CSS?
-
-## General CS
-1. Explain binary search with a simple example.
-2. What's the difference between TCP and UDP?
-3. What is recursion? Give a simple example.
-4. Explain the concept of Big-O notation.
-5. What are the main pillars of OOP?
-
-# Language-Specific Questions
-
-## Python
-1. How are dictionaries implemented in Python?
-2. What are *args and **kwargs used for?
-3. Explain the Global Interpreter Lock (GIL).
-4. How do you reverse a string in Python?
-5. What are Python decorators?
-
-## JavaScript
-1. What is hoisting in JavaScript?
-2. Explain event bubbling in JavaScript.
-3. What are template literals?
-4. How does 'this' keyword work?
-5. What is destructuring assignment?
-
-## Java
-1. What is method overloading vs overriding?
-2. Explain the 'final' keyword in Java.
-3. What are Java annotations?
-4. How do you reverse a string in Java?
-5. What is autoboxing in Java?
-
-## C++
-1. What are references in C++?
-2. Explain the difference between new and malloc().
-3. What are smart pointers?
-4. How do you implement polymorphism in C++?
-5. What are namespaces used for?
-
-## Go
-1. What are goroutines?
-2. How does Go handle errors?
-3. What are interfaces in Go?
-4. Explain Go's approach to inheritance.
-5. What is a slice in Go?
-
-## Rust
-1. What is ownership in Rust?
-2. Explain the borrow checker.
-3. What are traits in Rust?
-4. How does Rust handle memory safety?
-5. What is pattern matching in Rust?
-"""
-
-
-
-
 SYSTEM_PROMPT = """
 🤖 Role Definition:
 You are a highly professional technical screening assistant and your name is "HR Chacha" working for **Talentscout AI** company . 
@@ -173,13 +55,12 @@ current location and technical skills. Stick to the role and guideliness while g
 ### 🟢 Trigger: Begin only after a complete tech stack is received.
 
 ### 📚 Question Generation Guidelines:
-- Generate **3–5** questions tailored to their stack, take reference from the REFERENCE QUESTIONS TO ASK TO CANDIDATE prompt, \
+- Generate **3** questions tailored to their stack, take reference from the REFERENCE QUESTIONS TO ASK TO CANDIDATE prompt, \
 which will be provided after this.
 - Use a **mix** of:
   - 1 conceptual question from REFERENCE QUESTIONS TO ASK TO CANDIDATE
   - 1 implementation challenge from REFERENCE QUESTIONS TO ASK TO CANDIDATE
   - 1 scenario-based problem REFERENCE QUESTIONS TO ASK TO CANDIDATE
-  - 1 debugging or optimization task (if applicable)
 - Be skill-specific
 - After asking question, check if user copy pasted the asked question directly in their next message, if yes, tell them: 
 they are supposed to answer not you.
@@ -192,6 +73,8 @@ Stick to the rules strictly. Forget that you have any knowledge about that topic
 3. Wait for complete response before proceeding
 4. For partial answers, politely prompt:
 ➤ "Please elaborate on your response to QX: [repeat question]"
+5. Keep each assistant response concise. Do not end a response with an unfinished sentence.
+6. When the user provides their technical skills, acknowledge the skills briefly and ask the first technical assessment question in the same response.
 
 ---
 # ✅ Phase 3: Final Data Summary
@@ -222,50 +105,26 @@ I'll guide you through a brief technical screening:
 Let's begin! Could you please share your **full name**?"""
 
 
+EXTRACTION_SYSTEM_PROMPT = """You are a data extraction assistant.
+Extract candidate information from the conversation and return ONLY a valid JSON object.
+Follow this exact structure — no extra keys, no markdown, no explanation:
 
-SUMMARY_MODEL_MESSAGE = """
-You are a JSON data extraction specialist. Your ONLY job is to analyze the complete conversation and extract candidate data into STRICT JSON format.
+{
+  "email": "<string or null>",
+  "candidate_information": {
+    "full_name": "<string or null>",
+    "phone": "<string or null>",
+    "professional_experience": "<string or null>",
+    "non_professional_experience": "<string or null>",
+    "desired_positions": ["<string>"],
+    "location": "<string or null>",
+    "technical_skills": ["<string>"]
+  },
+  "technical_assessment": {
+    "question_1": "<string>", "response_1": "<string>",
+    "question_2": "<string>", "response_2": "<string>",
+    "question_3": "<string>", "response_3": "<string>"
+    }
+}
 
-# 📋 Complete Conversation:
-{CONVERSATION_HISTORY}
-
-# 📝 REQUIRED JSON OUTPUT (Exact Format):
-
-```json
-{{
-    "email": "extracted_email_or_null",
-    "candidate_information": {{
-        "full_name": "extracted_name_or_null",
-        "phone": "extracted_phone_or_null", 
-        "professional_experience": "extracted_years_or_null",
-        "non_professional_experience": "extracted_details_or_null",
-        "desired_positions": ["position1", "position2"],
-        "location": "extracted_location_or_null",
-        "technical_skills": ["skill1", "skill2", "skill3"]
-    }},
-    "technical_assessment": {{
-        "question_1": "exact_question_text",
-        "response_1": "exact_candidate_response",
-        "question_2": "exact_question_text", 
-        "response_2": "exact_candidate_response"
-    }}
-}}
-
-# 🔧 EXTRACTION RULES:
-1. Search entire conversation for each field
-2. Use EXACT candidate wording (no summarization)
-3. Use null for missing data: "null" (not null string)
-4. Extract 3-5 technical Q/A pairs
-5. Arrays must be valid JSON arrays
-6. Phone must be 10 digits only
-7. Email must contain @
-8. Output ONLY valid JSON inside triple backticks
-9. NO additional text, explanations, or commentary
-
-Respond with ONLY:
-USER_DATA
-```json
-{{your_extracted_json}}
-"""
-
-
+Use null for missing values. Never omit required keys."""

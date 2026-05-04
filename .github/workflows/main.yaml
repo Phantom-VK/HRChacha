@@ -76,7 +76,7 @@ jobs:
           ecr-repository: ${{ secrets.ECR_REPOSITORY_NAME }}
           image-tag: ${{ env.IMAGE_TAG }}
           mongo-uri: ${{ secrets.MONGO_URI }}
-          groq-api-key: ${{ secrets.GROQ_API_KEY }}
+          deepseek-api-key: ${{ secrets.DEEPSEEK_API_KEY }}
 
       - name: Final Status
         run: |

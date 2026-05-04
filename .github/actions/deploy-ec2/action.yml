@@ -9,7 +9,7 @@ inputs:
     required: true
   mongo-uri:
     required: true
-  groq-api-key:
+  deepseek-api-key:
     required: true
 runs:
   using: 'composite'
@@ -21,7 +21,7 @@ runs:
         ECR_REPOSITORY: ${{ inputs.ecr-repository }}
         IMAGE_TAG: ${{ inputs.image-tag }}
         MONGO_URI: ${{ inputs.mongo-uri }}
-        GROQ_API_KEY: ${{ inputs.groq-api-key }}
+        DEEPSEEK_API_KEY: ${{ inputs.deepseek-api-key }}
       run: |
         echo "🚀 Deploying $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         

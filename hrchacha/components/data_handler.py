@@ -1,4 +1,5 @@
 import sys
+import uuid
 
 from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
@@ -25,7 +26,7 @@ class Database:
 
 
             self.client.admin.command("ping")
-            logging.info("Connected to MongoDB")
+            logging.info("Connected to MongoDB. database=%s collection=%s", DB_NAME, COLLECTION_NAME)
 
         except Exception as e:
             err = HRChachaException(e, sys)
@@ -34,26 +35,41 @@ class Database:
             raise
 
     def insert_user(self, user_data: dict) -> bool:
-        """Insert a new candidate record. Returns True if successful."""
+        """Upsert a candidate record. Returns True if MongoDB acknowledges the write."""
         try:
             email = user_data.get("email")
 
-            # Enforce unique key: prefer email, else generate session-scoped id
             if not email:
-                import uuid
                 email = f"session-{uuid.uuid4()}@placeholder.local"
                 user_data["email"] = email
+                logging.warning("Candidate data has no email. Generated placeholder email=%s", email)
 
-            existing = self.collection.find_one({"email": email})
-            if existing:
-                return self.update_user(email, user_data)
+            logging.info(
+                "Uploading candidate data to MongoDB. email=%s keys=%s",
+                email,
+                sorted(user_data.keys()),
+            )
+            result = self.collection.update_one(
+                {"email": email},
+                {"$set": user_data},
+                upsert=True,
+            )
+            logging.info(
+                "MongoDB upload completed. acknowledged=%s matched=%d modified=%d upserted_id=%s",
+                result.acknowledged,
+                result.matched_count,
+                result.modified_count,
+                result.upserted_id,
+            )
 
-            self.collection.insert_one(user_data)
-            logging.info(f"User data inserted for {email}")
-
-            return True
+            return result.acknowledged
         except Exception as e:
             err = HRChachaException(e, sys)
+            logging.exception(
+                "MongoDB upload failed. email=%s error_type=%s",
+                user_data.get("email"),
+                type(e).__name__,
+            )
             logging.error(str(err))
             return False
 
@@ -67,9 +83,12 @@ class Database:
             if result.modified_count:
                 logging.info("User data updated")
                 return True
-            else:
-                logging.info("No data was updated")
-                return False
+            if result.matched_count:
+                logging.info("User data already up to date")
+                return True
+
+            logging.info("No matching user found to update")
+            return False
         except Exception as e:
             err = HRChachaException(e, sys)
             logging.error(str(err))
