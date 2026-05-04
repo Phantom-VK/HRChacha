@@ -2,9 +2,9 @@
 
 &#x20;  &#x20;
 
-> **HR Chacha** is an AI-powered hiring assistant chatbot built using **Streamlit**, **Groq-hosted LLMs**, **MongoDB** and deployed with **AWS ECR + EC2**. It simulates an intelligent recruiter that collects candidate details, asks technical questions based on their skills, and formats their data into a clean JSON format for HR/admins to evaluate.
+> **HR Chacha** is an AI-powered hiring assistant chatbot built using **Streamlit**, **DeepSeek for live chat and  post-chat summaries**, **MongoDB** and deployed with **AWS ECR + EC2**. It simulates an intelligent recruiter that collects candidate details, asks technical questions based on their skills, and formats their data into a clean JSON format for HR/admins to evaluate.
 
-AWS Deployment: Deployment has been paused.
+AWS Deployment: http://3.111.39.186:8501/  (USE HTTP NOT HTTPS)
 
 ---
 
@@ -42,10 +42,10 @@ cd HRChacha
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### 3. Use Python 3.12
+### 3. Use Python 3.12.3
 
 ```bash
-uv python install 3.12
+uv python install 3.12.3
 ```
 
 ### 4. Setup environment
@@ -62,7 +62,7 @@ Create a `.env` file:
 
 ```env
 MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/
-GROQ_API_KEY=your_groq_api_key_here
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
 ```
 
 ### 6. Run the app
@@ -92,8 +92,8 @@ The Docker image now installs dependencies from `uv.lock`, so local uv and conta
 
 * **Frontend**: Streamlit
 * **Backend**: Python
-* **Python version**: 3.12
-* **LLM API**: Groq
+* **Python version**: 3.12.3
+* **LLM API**: DeepSeek for chat and summaries
 * **Database**: MongoDB Atlas
 * **Deploymet**: Github Workflow, Runners, Docker,  AWS ECR, AWS EC2
 * **Prompt Management**: Custom, static system prompt with extract logic
@@ -103,13 +103,13 @@ The Docker image now installs dependencies from `uv.lock`, so local uv and conta
 * `streamlit`
 * `pymongo`
 * `python-dotenv`
-* `groq`
+* `openai`
 
 ### 🧠 LLM Architecture
 
 * Uses chat history and a persistent `system` role
-* Messages streamed with cursor-style output
-* Structured prompt instructs LLM to collect & serialize user data
+* Streams live interview responses through DeepSeek's OpenAI-compatible chat API
+* Extracts structured candidate JSON through Groq only after successful chat completion
 
 ---
 
@@ -119,9 +119,9 @@ Prompting strategy follows best practices:
 
 * Starts with a clear role definition
 * Instructionally structured in numbered format
-* Uses trigger phrase `USER_DATA` to tag final JSON output
 * Prompts candidate to answer tech questions with number and answer pairing
 * Handles irrelevant input with fallback behavior
+
 
 > See the full prompt in [`hrchacha/prompts`](./hrchacha/prompts/__init__.py)
 
@@ -149,4 +149,4 @@ graph TD;
 ## 👨‍💻 Author
 
 * 👤 **Vikramaditya Khupse**
-  Final Year IT | ML + Fullstack | Building real-world solutions
+  Final Year IT | AI/ML + Fullstack | Building real-world solutions
